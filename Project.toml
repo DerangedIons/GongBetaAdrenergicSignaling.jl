@@ -1,0 +1,13 @@
+name = "GongBetaAdrenergicSignaling"
+uuid = "c9319e42-2a68-4d31-a4ce-d28d39ea7682"
+authors = ["Kyle Beggs <beggskw@gmail.com> and contributors"]
+version = "0.0.1"
+
+[compat]
+julia = "1.10"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
