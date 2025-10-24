@@ -26,10 +26,10 @@ using GongBetaAdrenergicSignaling
 using ModelingToolkit, OrdinaryDiffEq
 
 # Create model with defaults (iso = 0.0)
-@mtkbuild sys = GongBetaAdrenergic()
+@mtkcompile sys = GongBetaAdrenergic()
 
 # Create ODE problem with default initial conditions
-prob = ODEProblem(sys, [], (0.0, 10000.0), [])
+prob = ODEProblem(sys, [], (0.0, 1000.0))
 
 # Solve with appropriate stiff solver
 sol = solve(prob, Rodas5P())
@@ -37,8 +37,9 @@ sol = solve(prob, Rodas5P())
 
 # Overriding Parameters
 ```julia
+# !!! not yet implemented !!!
 # Create model with isoproterenol stimulation
-@mtkbuild sys = GongBetaAdrenergic(iso = 1.0)  # 1 μM isoproterenol
+@mtkcompile sys = GongBetaAdrenergic(iso = 1.0)  # 1 μM isoproterenol
 
 # Access observables after solving
 using Plots
@@ -48,6 +49,9 @@ plot(sol, idxs=[sys.fICaLP, sys.fPLBP, sys.fRyRP],
 ```
 """
 module GongBetaAdrenergicSignaling
+
+using Reexport
+@reexport using ModelingToolkit
 
 include("model.jl")
 

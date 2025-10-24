@@ -1,6 +1,3 @@
-using GongBetaAdrenergicSignaling
-using Test
+using TestItemRunner
 
-@testset "GongBetaAdrenergicSignaling.jl" begin
-    # Write your tests here.
-end
+@run_package_tests
