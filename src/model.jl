@@ -123,386 +123,235 @@ using ModelingToolkit: t_nounits as t, D_nounits as D
         Mi = 0.01
         Li = 0.0001
         Ki = 0.01
-
-        # Pre-compute ALL c1-c167 values
-        _c1 = iso_conc
-        _c2 = 0.02 * volume
-        _c3 = 0.04 * volume
-        _c4 = volume * 0.678
-        _c5 = volume / _c2
-        _c6 = volume / _c3
-        _c7 = volume / _c4
-        _c8 = 5e-15 * 1000000.0
-        _c9 = 7.5e-14 * 1000000.0
-        _c10 = 9e-15 * 1000000.0
-        _c11 = f_eca * PKA_tot * _c6
-        _c12 = f_cav * PKA_tot * _c5
-        _c13 = f_cyt * PKA_tot * _c7
-        _c14 = f_pki_cav * PKI_tot * _c5
-        _c15 = f_pki_eca * PKI_tot * _c6
-        _c16 = f_pki_cyt * PKI_tot * _c7
-        _c17 = 50.0
-        _c18 = _c17 * K_pki
-        _c19 = 100.0
-        _c20 = 100.0
-        _c21 = 100.0
-        _c22 = _c19 * pka_cav_K1
-        _c23 = _c20 * pka_cav_K2
-        _c24 = _c21 * pka_cav_K3
-        _c25 = _c19 * pka_eca_K1
-        _c26 = _c20 * pka_eca_K2
-        _c27 = _c21 * pka_eca_K3
-        _c28 = _c19 * pka_cyt_K1
-        _c29 = _c20 * pka_cyt_K2
-        _c30 = _c21 * pka_cyt_K3
-        _c31 = 0.010145
-        _c32 = 0.0035731
-        _c33 = 0.001469
-        _c34 = 1.9526e-5
-        _c35 = 0.1
-        _c36 = 0.25
-        _c37 = 0.2
-        _c38 = 0.001
-        _c39 = f / (1.0 - f) * _c38 + f * _c37
-        _c40 = 1.0
-        _c41 = 20.0
-        _c42 = 2.5
-        _c43 = 4.0
-        _c44 = 50.0
-        _c45 = 0.8
-        _c46 = 1.4
-        _c47 = 3.0
-        _c48 = 0.0196
-        _c49 = KPDEp * _c48
-        _c50 = ibmx2 * f_pde2_cav * _c5
-        _c51 = ibmx2 * f_pde2_eca * _c6
-        _c52 = ibmx2 * f_pde2_cyt * _c7
-        _c53 = ibmx3 * f_pde3_cav * _c5
-        _c54 = ibmx3 * f_pde3_cyt * _c7
-        _c55 = ibmx4 * f_pde4_cav * _c5
-        _c56 = ibmx4 * f_pde4_eca * _c6
-        _c57 = ibmx4 * f_pde4_cyt * _c7
-        _c58 = 224.0 * beta_R_b1_tot
-        _c59 = 0.5
-        _c60 = 0.5664
-        _c61 = 0.0011071
-        _c62 = 1.0 - _c61 - _c60
-        _c63 = 0.85
-        _c64 = 1.0 - _c63
-        _c65 = 0.567
-        _c66 = 2.449
-        _c67 = 0.062
-        _c68 = 1.053
-        _c69 = 0.012
-        _c70 = 1.6655
-        _c71 = 1.8463
-        _c72 = 1.053
-        _c73 = 0.1
-        _c74 = 4.9054
-        _c75 = 0.25945
-        _c76 = 4.0
-        _c77 = 0.05
-        _c78 = 0.8
-        _c79 = _c78
-        _c80 = 1210.0
-        _c81 = _c80
-        _c82 = rate_bds * 0.0009833
-        _c83 = rate_bds * 0.00133
-        _c84 = rate_bds * 0.0065
-        _c85 = 0.15629 * _c84
-        _c86 = 1.0
-        _c87 = f_Rb1_cav * beta_R_b1_tot * _c5
-        _c88 = 1.0
-        _c89 = f_Rb2_cav * beta_R_b2_tot * _c5
-        _c90 = (_c73 + _c1) * (_c68 + _c1) / _c68
-        _c91 = _c71 * _c69 * _c65 * (_c67 + _c1) * (_c72 + _c1)
-        _c92 = _c65 * _c72 * (_c67 + _c1) * (_c69 + _c1)
-        _c93 = _c66 * _c71 * _c67 * _c69 * (_c65 + _c1) * (_c72 + _c1)
-        _c94 = _c66 * _c67 * _c72 * (_c69 + _c1) * (_c65 + _c1)
-        _c95 = 1.0
-        _c96 = 1.0
-        _c97 = f_Rb2_eca * beta_R_b2_tot * _c6
-        _c98 = f_Rb1_eca * beta_R_b1_tot * _c6
-        _c99 = (_c73 + _c1) * (_c68 + _c1) / _c68
-        _c100 = _c66 * _c67 * _c72 * (_c69 + _c1) * (_c65 + _c1)
-        _c101 = _c66 * _c71 * _c67 * _c69 * (_c65 + _c1) * (_c72 + _c1)
-        _c102 = _c65 * _c72 * (_c67 + _c1) * (_c69 + _c1)
-        _c103 = _c71 * _c69 * _c65 * (_c67 + _c1) * (_c72 + _c1)
-        _c104 = f_Rb1_cyt * beta_R_b1_tot * _c7
-        _c105 = 1.0
-        _c106 = (_c67 + _c1) * (_c65 + _c1) / _c65
-        _c107 = 1.0043
-        _c108 = 1.3574
-        _c109 = 0.6623
-        _c110 = 0.031544
-        _c111 = 0.0852
-        _c112 = 0.0465
-        _c113 = 0.4824
-        _c114 = 0.03135
-        _c115 = 0.037696
-        _c116 = 3.3757
-        _c117 = 41.32
-        _c118 = 0.8569
-        _c119 = (1.0 - f_AC47_eca) * (1.0 - f_AC56_AC47) * AC_tot * _c7
-        _c120 = f_AC56_cav * f_AC56_AC47 * AC_tot * _c5
-        _c121 = ATP / (KmATP + ATP)
-        _c122 = f_AC47_eca * (1.0 - f_AC56_AC47) * AC_tot * _c6
-        _c123 = (1.0 - f_AC56_cav) * f_AC56_AC47 * AC_tot * _c7
-        _c124 = 0.015265
-        _c125 = 0.092455
-        _c126 = 0.0011001
-        _c127 = 5.7392
-        _c128 = 0.10988
-        _c129 = 7.8605
-        _c130 = 0.01368
-        _c131 = 0.052811
-        _c132 = 0.11348
-        _c133 = 0.48302
-        _c134 = 9.88539999999999992e-04
-        _c135 = 0.80737
-        _c136 = 0.069537
-        _c137 = 0.317
-        _c138 = 0.27623
-        _c139 = 0.002331
-        _c140 = 0.16305
-        _c141 = 1.0542
-        _c142 = 9.97940000000000003e-05
-        _c143 = 1.11470000000000002e-04
-        _c144 = 0.025
-        _c147 = 0.10408
-        _c148 = 0.052633
-        _c149 = 2.71430000000000008e-05
-        _c150 = 0.26714
-        _c151 = 0.125
-        _c152 = 0.0025548
-        _c153 = 0.0038257
-        _c154 = 6.62979999999999944e-05
-        _c155 = 0.043003
-        _c156 = 0.025
-        _c157 = 5.10090000000000044e-04
-        _c158 = 0.0006903
-        _c159 = 1.27019999999999993e-06
-        _c160 = 0.0063064
-
-        # IKs AKAP calculations
-        _iks_sig_PKAf_sum = 1.0 + (Yotiao - _c11) / M
-        _iks_sig_PKAf = M / 2.0 * (√(_iks_sig_PKAf_sum^2.0 + 4.0 * _c11 / M) - _iks_sig_PKAf_sum)
-        _iks_sig_PP1f_eca_sum = 1.0 + (Yotiao - _c35) / iks_sig_K
-        _PP1f_eca = iks_sig_K / 2.0 * (√(_iks_sig_PP1f_eca_sum^2.0 + 4.0 * _c35 / iks_sig_K) - _iks_sig_PP1f_eca_sum)
-        _iks_sig_IKsf_sum = 1.0 + (Yotiao - _c144) / iks_sig_L
-        _IKsf = iks_sig_L / 2.0 * (√(_iks_sig_IKsf_sum^2.0 + 4.0 * _c144 / iks_sig_L) - _iks_sig_IKsf_sum)
-        _Yotiaof = (Yotiao - _c144 + _IKsf) / ((1.0 + _PP1f_eca / iks_sig_K) * (1.0 + _iks_sig_PKAf / M))
-        _c145 = _IKsf * _Yotiaof * _iks_sig_PKAf / (iks_sig_L * M)
-        _c146 = _c145 * _PP1f_eca / iks_sig_K
-
-        # RyR and ICaL AKAP calculations
-        _akap_sig_RyRf_sum = 1.0 + (RyR_akap - _c151) / Lr
-        _RyRf = Lr / 2.0 * (√(_akap_sig_RyRf_sum^2.0 + 4.0 * _c151 / Lr) - _akap_sig_RyRf_sum)
-        _akap_sig_ICaLf_sum = 1.0 + (ICaL_akap - _c156) / Li
-        _ICaLf = Li / 2.0 * (√(_akap_sig_ICaLf_sum^2.0 + 4.0 * _c156 / Li) - _akap_sig_ICaLf_sum)
-
-        _akap_sig_PP1f_cav_b = ICaL_akap + RyR_akap + Ki + Kr - _c36
-        _akap_sig_PP1f_cav_c = ICaL_akap * Kr + RyR_akap * Ki + Ki * Kr - _c36 * (Ki + Kr)
-        _akap_sig_PP1f_cav_d = _c36 * Ki * Kr
-        _akap_sig_PP1f_cav_rr = -_akap_sig_PP1f_cav_d / 27.0 * _akap_sig_PP1f_cav_b^3.0 - _akap_sig_PP1f_cav_b * _akap_sig_PP1f_cav_b * _akap_sig_PP1f_cav_c * _akap_sig_PP1f_cav_c / 108.0 + _akap_sig_PP1f_cav_b * _akap_sig_PP1f_cav_c * _akap_sig_PP1f_cav_d / 6.0 + _akap_sig_PP1f_cav_c^3.0 / 27.0 + _akap_sig_PP1f_cav_d * _akap_sig_PP1f_cav_d / 4.0
-        _akap_sig_PP1f_cav_yi = (_akap_sig_PP1f_cav_rr < 0.0) ? √(-_akap_sig_PP1f_cav_rr) : 0.0
-        _akap_sig_PP1f_cav_yr = ((_akap_sig_PP1f_cav_rr > 0.0) ? √(_akap_sig_PP1f_cav_rr) : 0.0) + _akap_sig_PP1f_cav_d / 2.0 + _akap_sig_PP1f_cav_b * _akap_sig_PP1f_cav_c / 6.0 - _akap_sig_PP1f_cav_b^3.0 / 27.0
-        _akap_sig_PP1f_cav_mag = (_akap_sig_PP1f_cav_yr * _akap_sig_PP1f_cav_yr + _akap_sig_PP1f_cav_yi * _akap_sig_PP1f_cav_yi)^(1.0 / 6.0)
-        _akap_sig_PP1f_cav_arg = atan(_akap_sig_PP1f_cav_yi / _akap_sig_PP1f_cav_yr) / 3.0
-        _akap_sig_PP1f_cav_x = (_akap_sig_PP1f_cav_c / 3.0 - _akap_sig_PP1f_cav_b * _akap_sig_PP1f_cav_b / 9.0) / (_akap_sig_PP1f_cav_mag * _akap_sig_PP1f_cav_mag)
-        _PP1f_cav = _akap_sig_PP1f_cav_mag * cos(_akap_sig_PP1f_cav_arg) * (1.0 - _akap_sig_PP1f_cav_x) - _akap_sig_PP1f_cav_b / 3.0
-
-        _akap_sig_PKAf_d = _c12 * Mi * Mr
-        _akap_sig_PKAf_b = ICaL_akap + RyR_akap + Mi + Mr - _c12
-        _akap_sig_PKAf_c = ICaL_akap * Mr + RyR_akap * Mi + Mi * Mr - _c12 * (Mi + Mr)
-        _akap_sig_PKAf_rr = -_akap_sig_PKAf_d / 27.0 * _akap_sig_PKAf_b^3.0 - _akap_sig_PKAf_b * _akap_sig_PKAf_b * _akap_sig_PKAf_c * _akap_sig_PKAf_c / 108.0 + _akap_sig_PKAf_b * _akap_sig_PKAf_c * _akap_sig_PKAf_d / 6.0 + _akap_sig_PKAf_c^3.0 / 27.0 + _akap_sig_PKAf_d * _akap_sig_PKAf_d / 4.0
-        _akap_sig_PKAf_yr = ((_akap_sig_PKAf_rr > 0.0) ? √(_akap_sig_PKAf_rr) : 0.0) + _akap_sig_PKAf_d / 2.0 + _akap_sig_PKAf_b * _akap_sig_PKAf_c / 6.0 - _akap_sig_PKAf_b^3.0 / 27.0
-        _akap_sig_PKAf_yi = (_akap_sig_PKAf_rr < 0.0) ? √(-_akap_sig_PKAf_rr) : 0.0
-        _akap_sig_PKAf_mag = (_akap_sig_PKAf_yr * _akap_sig_PKAf_yr + _akap_sig_PKAf_yi * _akap_sig_PKAf_yi)^(1.0 / 6.0)
-        _akap_sig_PKAf_arg = atan(_akap_sig_PKAf_yi / _akap_sig_PKAf_yr) / 3.0
-        _akap_sig_PKAf_x = (_akap_sig_PKAf_c / 3.0 - _akap_sig_PKAf_b * _akap_sig_PKAf_b / 9.0) / (_akap_sig_PKAf_mag * _akap_sig_PKAf_mag)
-        _akap_sig_PKAf = _akap_sig_PKAf_mag * cos(_akap_sig_PKAf_arg) * (1.0 - _akap_sig_PKAf_x) - _akap_sig_PKAf_b / 3.0
-
-        _RyR_akapf = (RyR_akap - _c151 + _RyRf) / ((_PP1f_cav / Kr + 1.0) * (_akap_sig_PKAf / Mr + 1.0))
-        _ICaL_akapf = (ICaL_akap - _c156 + _ICaLf) / ((_PP1f_cav / Ki + 1.0) * (_akap_sig_PKAf / Mi + 1.0))
-        _c161 = _RyRf * _RyR_akapf * _akap_sig_PKAf / (Lr * Mr)
-        _c162 = _c161 * _PP1f_cav / Kr
-        _c163 = _ICaLf * _ICaL_akapf * _akap_sig_PKAf / (Li * Mi)
-        _c164 = _c163 * _PP1f_cav / Ki
-        _c165 = 0.0329 + _c161 / _c151
-        _c166 = 0.0269 + _c163 / _c156
-        _c167 = 0.0306 + _c145 / _c144
     end
 
     @parameters begin
-        # c1-c167: All model parameters computed from structural parameters above
-        c1 = _c1
-        c2 = _c2
-        c3 = _c3
-        c4 = _c4
-        c5 = _c5
-        c6 = _c6
-        c7 = _c7
-        c8 = _c8
-        c9 = _c9
-        c10 = _c10
-        c11 = _c11
-        c12 = _c12
-        c13 = _c13
-        c14 = _c14
-        c15 = _c15
-        c16 = _c16
-        c17 = _c17
-        c18 = _c18
-        c19 = _c19
-        c20 = _c20
-        c21 = _c21
-        c22 = _c22
-        c23 = _c23
-        c24 = _c24
-        c25 = _c25
-        c26 = _c26
-        c27 = _c27
-        c28 = _c28
-        c29 = _c29
-        c30 = _c30
-        c31 = _c31
-        c32 = _c32
-        c33 = _c33
-        c34 = _c34
-        c35 = _c35
-        c36 = _c36
-        c37 = _c37
-        c38 = _c38
-        c39 = _c39
-        c40 = _c40
-        c41 = _c41
-        c42 = _c42
-        c43 = _c43
-        c44 = _c44
-        c45 = _c45
-        c46 = _c46
-        c47 = _c47
-        c48 = _c48
-        c49 = _c49
-        c50 = _c50
-        c51 = _c51
-        c52 = _c52
-        c53 = _c53
-        c54 = _c54
-        c55 = _c55
-        c56 = _c56
-        c57 = _c57
-        c58 = _c58
-        c59 = _c59
-        c60 = _c60
-        c61 = _c61
-        c62 = _c62
-        c63 = _c63
-        c64 = _c64
-        c65 = _c65
-        c66 = _c66
-        c67 = _c67
-        c68 = _c68
-        c69 = _c69
-        c70 = _c70
-        c71 = _c71
-        c72 = _c72
-        c73 = _c73
-        c74 = _c74
-        c75 = _c75
-        c76 = _c76
-        c77 = _c77
-        c78 = _c78
-        c79 = _c79
-        c80 = _c80
-        c81 = _c81
-        c82 = _c82
-        c83 = _c83
-        c84 = _c84
-        c85 = _c85
-        c86 = _c86
-        c87 = _c87
-        c88 = _c88
-        c89 = _c89
-        c90 = _c90
-        c91 = _c91
-        c92 = _c92
-        c93 = _c93
-        c94 = _c94
-        c95 = _c95
-        c96 = _c96
-        c97 = _c97
-        c98 = _c98
-        c99 = _c99
-        c100 = _c100
-        c101 = _c101
-        c102 = _c102
-        c103 = _c103
-        c104 = _c104
-        c105 = _c105
-        c106 = _c106
-        c107 = _c107
-        c108 = _c108
-        c109 = _c109
-        c110 = _c110
-        c111 = _c111
-        c112 = _c112
-        c113 = _c113
-        c114 = _c114
-        c115 = _c115
-        c116 = _c116
-        c117 = _c117
-        c118 = _c118
-        c119 = _c119
-        c120 = _c120
-        c121 = _c121
-        c122 = _c122
-        c123 = _c123
-        c124 = _c124
-        c125 = _c125
-        c126 = _c126
-        c127 = _c127
-        c128 = _c128
-        c129 = _c129
-        c130 = _c130
-        c131 = _c131
-        c132 = _c132
-        c133 = _c133
-        c134 = _c134
-        c135 = _c135
-        c136 = _c136
-        c137 = _c137
-        c138 = _c138
-        c139 = _c139
-        c140 = _c140
-        c141 = _c141
-        c142 = _c142
-        c143 = _c143
-        c144 = _c144
-        c145 = _c145
-        c146 = _c146
-        c147 = _c147
-        c148 = _c148
-        c149 = _c149
-        c150 = _c150
-        c151 = _c151
-        c152 = _c152
-        c153 = _c153
-        c154 = _c154
-        c155 = _c155
-        c156 = _c156
-        c157 = _c157
-        c158 = _c158
-        c159 = _c159
-        c160 = _c160
-        c161 = _c161
-        c162 = _c162
-        c163 = _c163
-        c164 = _c164
-        c165 = _c165
-        c166 = _c166
-        c167 = _c167
+        # c1-c7: Volume parameters
+        c1 = iso_conc
+        c2 = 0.02 * volume
+        c3 = 0.04 * volume
+        c4 = volume * 0.678
+        c5 = volume / c2
+        c6 = volume / c3
+        c7 = volume / c4
+
+        # c8-c10: cAMP diffusion rates
+        c8 = 5e-15 * 1000000.0
+        c9 = 7.5e-14 * 1000000.0
+        c10 = 9e-15 * 1000000.0
+
+        # c11-c30: PKA parameters
+        c11 = f_eca * PKA_tot * c6
+        c12 = f_cav * PKA_tot * c5
+        c13 = f_cyt * PKA_tot * c7
+        c14 = f_pki_cav * PKI_tot * c5
+        c15 = f_pki_eca * PKI_tot * c6
+        c16 = f_pki_cyt * PKI_tot * c7
+        c17 = 50.0
+        c18 = c17 * K_pki
+        c19 = 100.0
+        c20 = 100.0
+        c21 = 100.0
+        c22 = c19 * pka_cav_K1
+        c23 = c20 * pka_cav_K2
+        c24 = c21 * pka_cav_K3
+        c25 = c19 * pka_eca_K1
+        c26 = c20 * pka_eca_K2
+        c27 = c21 * pka_eca_K3
+        c28 = c19 * pka_cyt_K1
+        c29 = c20 * pka_cyt_K2
+        c30 = c21 * pka_cyt_K3
+
+        # c31-c45: PP1 and PDE parameters
+        c31 = 0.010145
+        c32 = 0.0035731
+        c33 = 0.001469
+        c34 = 1.9526e-5
+        c35 = 0.1
+        c36 = 0.25
+        c37 = 0.2
+        c38 = 0.001
+        c39 = f / (1.0 - f) * c38 + f * c37
+        c40 = 1.0
+        c41 = 20.0
+        c42 = 2.5
+        c43 = 4.0
+        c44 = 50.0
+        c45 = 0.8
+
+        # c46-c57: PDE concentrations
+        c46 = 1.4
+        c47 = 3.0
+        c48 = 0.0196
+        c49 = KPDEp * c48
+        c50 = ibmx2 * f_pde2_cav * c5
+        c51 = ibmx2 * f_pde2_eca * c6
+        c52 = ibmx2 * f_pde2_cyt * c7
+        c53 = ibmx3 * f_pde3_cav * c5
+        c54 = ibmx3 * f_pde3_cyt * c7
+        c55 = ibmx4 * f_pde4_cav * c5
+        c56 = ibmx4 * f_pde4_eca * c6
+        c57 = ibmx4 * f_pde4_cyt * c7
+
+        # c58-c106: Receptor and G-protein parameters
+        c58 = 224.0 * beta_R_b1_tot
+        c59 = 0.5
+        c60 = 0.5664
+        c61 = 0.0011071
+        c62 = 1.0 - c61 - c60
+        c63 = 0.85
+        c64 = 1.0 - c63
+        c65 = 0.567
+        c66 = 2.449
+        c67 = 0.062
+        c68 = 1.053
+        c69 = 0.012
+        c70 = 1.6655
+        c71 = 1.8463
+        c72 = 1.053
+        c73 = 0.1
+        c74 = 4.9054
+        c75 = 0.25945
+        c76 = 4.0
+        c77 = 0.05
+        c78 = 0.8
+        c79 = c78
+        c80 = 1210.0
+        c81 = c80
+        c82 = rate_bds * 0.0009833
+        c83 = rate_bds * 0.00133
+        c84 = rate_bds * 0.0065
+        c85 = 0.15629 * c84
+        c86 = 1.0
+        c87 = f_Rb1_cav * beta_R_b1_tot * c5
+        c88 = 1.0
+        c89 = f_Rb2_cav * beta_R_b2_tot * c5
+        c90 = (c73 + c1) * (c68 + c1) / c68
+        c91 = c71 * c69 * c65 * (c67 + c1) * (c72 + c1)
+        c92 = c65 * c72 * (c67 + c1) * (c69 + c1)
+        c93 = c66 * c71 * c67 * c69 * (c65 + c1) * (c72 + c1)
+        c94 = c66 * c67 * c72 * (c69 + c1) * (c65 + c1)
+        c95 = 1.0
+        c96 = 1.0
+        c97 = f_Rb2_eca * beta_R_b2_tot * c6
+        c98 = f_Rb1_eca * beta_R_b1_tot * c6
+        c99 = (c73 + c1) * (c68 + c1) / c68
+        c100 = c66 * c67 * c72 * (c69 + c1) * (c65 + c1)
+        c101 = c66 * c71 * c67 * c69 * (c65 + c1) * (c72 + c1)
+        c102 = c65 * c72 * (c67 + c1) * (c69 + c1)
+        c103 = c71 * c69 * c65 * (c67 + c1) * (c72 + c1)
+        c104 = f_Rb1_cyt * beta_R_b1_tot * c7
+        c105 = 1.0
+        c106 = (c67 + c1) * (c65 + c1) / c65
+
+        # c107-c123: AC parameters
+        c107 = 1.0043
+        c108 = 1.3574
+        c109 = 0.6623
+        c110 = 0.031544
+        c111 = 0.0852
+        c112 = 0.0465
+        c113 = 0.4824
+        c114 = 0.03135
+        c115 = 0.037696
+        c116 = 3.3757
+        c117 = 41.32
+        c118 = 0.8569
+        c119 = (1.0 - f_AC47_eca) * (1.0 - f_AC56_AC47) * AC_tot * c7
+        c120 = f_AC56_cav * f_AC56_AC47 * AC_tot * c5
+        c121 = ATP / (KmATP + ATP)
+        c122 = f_AC47_eca * (1.0 - f_AC56_AC47) * AC_tot * c6
+        c123 = (1.0 - f_AC56_cav) * f_AC56_AC47 * AC_tot * c7
+
+        # c124-c144: Substrate phosphorylation parameters
+        c124 = 0.015265
+        c125 = 0.092455
+        c126 = 0.0011001
+        c127 = 5.7392
+        c128 = 0.10988
+        c129 = 7.8605
+        c130 = 0.01368
+        c131 = 0.052811
+        c132 = 0.11348
+        c133 = 0.48302
+        c134 = 9.88539999999999992e-04
+        c135 = 0.80737
+        c136 = 0.069537
+        c137 = 0.317
+        c138 = 0.27623
+        c139 = 0.002331
+        c140 = 0.16305
+        c141 = 1.0542
+        c142 = 9.97940000000000003e-05
+        c143 = 1.11470000000000002e-04
+        c144 = 0.025
+
+        # c145-c146: IKs AKAP-bound concentrations
+        iks_sig_PKAf_sum = 1.0 + (Yotiao - c11) / M
+        iks_sig_PKAf = M / 2.0 * (sqrt(iks_sig_PKAf_sum^2.0 + 4.0 * c11 / M) - iks_sig_PKAf_sum)
+        iks_sig_PP1f_eca_sum = 1.0 + (Yotiao - c35) / iks_sig_K
+        PP1f_eca = iks_sig_K / 2.0 * (sqrt(iks_sig_PP1f_eca_sum^2.0 + 4.0 * c35 / iks_sig_K) - iks_sig_PP1f_eca_sum)
+        iks_sig_IKsf_sum = 1.0 + (Yotiao - c144) / iks_sig_L
+        IKsf = iks_sig_L / 2.0 * (sqrt(iks_sig_IKsf_sum^2.0 + 4.0 * c144 / iks_sig_L) - iks_sig_IKsf_sum)
+        Yotiaof = (Yotiao - c144 + IKsf) / ((1.0 + PP1f_eca / iks_sig_K) * (1.0 + iks_sig_PKAf / M))
+        c145 = IKsf * Yotiaof * iks_sig_PKAf / (iks_sig_L * M)
+        c146 = c145 * PP1f_eca / iks_sig_K
+
+        # c147-c160: More substrate parameters
+        c147 = 0.10408
+        c148 = 0.052633
+        c149 = 2.71430000000000008e-05
+        c150 = 0.26714
+        c151 = 0.125
+        c152 = 0.0025548
+        c153 = 0.0038257
+        c154 = 6.62979999999999944e-05
+        c155 = 0.043003
+        c156 = 0.025
+        c157 = 5.10090000000000044e-04
+        c158 = 0.0006903
+        c159 = 1.27019999999999993e-06
+        c160 = 0.0063064
+
+        # c161-c164: RyR and ICaL AKAP-bound concentrations
+        akap_sig_RyRf_sum = 1.0 + (RyR_akap - c151) / Lr
+        RyRf = Lr / 2.0 * (sqrt(akap_sig_RyRf_sum^2.0 + 4.0 * c151 / Lr) - akap_sig_RyRf_sum)
+        akap_sig_ICaLf_sum = 1.0 + (ICaL_akap - c156) / Li
+        ICaLf = Li / 2.0 * (sqrt(akap_sig_ICaLf_sum^2.0 + 4.0 * c156 / Li) - akap_sig_ICaLf_sum)
+
+        akap_sig_PP1f_cav_b = ICaL_akap + RyR_akap + Ki + Kr - c36
+        akap_sig_PP1f_cav_c = ICaL_akap * Kr + RyR_akap * Ki + Ki * Kr - c36 * (Ki + Kr)
+        akap_sig_PP1f_cav_d = c36 * Ki * Kr
+        akap_sig_PP1f_cav_rr = -akap_sig_PP1f_cav_d / 27.0 * akap_sig_PP1f_cav_b^3.0 - akap_sig_PP1f_cav_b * akap_sig_PP1f_cav_b * akap_sig_PP1f_cav_c * akap_sig_PP1f_cav_c / 108.0 + akap_sig_PP1f_cav_b * akap_sig_PP1f_cav_c * akap_sig_PP1f_cav_d / 6.0 + akap_sig_PP1f_cav_c^3.0 / 27.0 + akap_sig_PP1f_cav_d * akap_sig_PP1f_cav_d / 4.0
+        akap_sig_PP1f_cav_yi = sqrt(max(0.0, -akap_sig_PP1f_cav_rr))
+        akap_sig_PP1f_cav_yr = sqrt(max(0.0, akap_sig_PP1f_cav_rr)) + akap_sig_PP1f_cav_d / 2.0 + akap_sig_PP1f_cav_b * akap_sig_PP1f_cav_c / 6.0 - akap_sig_PP1f_cav_b^3.0 / 27.0
+        akap_sig_PP1f_cav_mag = (akap_sig_PP1f_cav_yr * akap_sig_PP1f_cav_yr + akap_sig_PP1f_cav_yi * akap_sig_PP1f_cav_yi)^(1.0 / 6.0)
+        akap_sig_PP1f_cav_arg = atan(akap_sig_PP1f_cav_yi / akap_sig_PP1f_cav_yr) / 3.0
+        akap_sig_PP1f_cav_x = (akap_sig_PP1f_cav_c / 3.0 - akap_sig_PP1f_cav_b * akap_sig_PP1f_cav_b / 9.0) / (akap_sig_PP1f_cav_mag * akap_sig_PP1f_cav_mag)
+        PP1f_cav = akap_sig_PP1f_cav_mag * cos(akap_sig_PP1f_cav_arg) * (1.0 - akap_sig_PP1f_cav_x) - akap_sig_PP1f_cav_b / 3.0
+
+        akap_sig_PKAf_d = c12 * Mi * Mr
+        akap_sig_PKAf_b = ICaL_akap + RyR_akap + Mi + Mr - c12
+        akap_sig_PKAf_c = ICaL_akap * Mr + RyR_akap * Mi + Mi * Mr - c12 * (Mi + Mr)
+        akap_sig_PKAf_rr = -akap_sig_PKAf_d / 27.0 * akap_sig_PKAf_b^3.0 - akap_sig_PKAf_b * akap_sig_PKAf_b * akap_sig_PKAf_c * akap_sig_PKAf_c / 108.0 + akap_sig_PKAf_b * akap_sig_PKAf_c * akap_sig_PKAf_d / 6.0 + akap_sig_PKAf_c^3.0 / 27.0 + akap_sig_PKAf_d * akap_sig_PKAf_d / 4.0
+        akap_sig_PKAf_yr = sqrt(max(0.0, akap_sig_PKAf_rr)) + akap_sig_PKAf_d / 2.0 + akap_sig_PKAf_b * akap_sig_PKAf_c / 6.0 - akap_sig_PKAf_b^3.0 / 27.0
+        akap_sig_PKAf_yi = sqrt(max(0.0, -akap_sig_PKAf_rr))
+        akap_sig_PKAf_mag = (akap_sig_PKAf_yr * akap_sig_PKAf_yr + akap_sig_PKAf_yi * akap_sig_PKAf_yi)^(1.0 / 6.0)
+        akap_sig_PKAf_arg = atan(akap_sig_PKAf_yi / akap_sig_PKAf_yr) / 3.0
+        akap_sig_PKAf_x = (akap_sig_PKAf_c / 3.0 - akap_sig_PKAf_b * akap_sig_PKAf_b / 9.0) / (akap_sig_PKAf_mag * akap_sig_PKAf_mag)
+        akap_sig_PKAf = akap_sig_PKAf_mag * cos(akap_sig_PKAf_arg) * (1.0 - akap_sig_PKAf_x) - akap_sig_PKAf_b / 3.0
+
+        RyR_akapf = (RyR_akap - c151 + RyRf) / ((PP1f_cav / Kr + 1.0) * (akap_sig_PKAf / Mr + 1.0))
+        ICaL_akapf = (ICaL_akap - c156 + ICaLf) / ((PP1f_cav / Ki + 1.0) * (akap_sig_PKAf / Mi + 1.0))
+        c161 = RyRf * RyR_akapf * akap_sig_PKAf / (Lr * Mr)
+        c162 = c161 * PP1f_cav / Kr
+        c163 = ICaLf * ICaL_akapf * akap_sig_PKAf / (Li * Mi)
+        c164 = c163 * PP1f_cav / Ki
+
+        # c165-c167: Effective phosphorylation fractions
+        c165 = 0.0329 + c161 / c151
+        c166 = 0.0269 + c163 / c156
+        c167 = 0.0306 + c145 / c144
     end
 
     @variables begin
@@ -711,11 +560,11 @@ using ModelingToolkit: t_nounits as t, D_nounits as D
         beta_cav_Gs_f_d * beta_cav_Gs_f_d / 4.0
     )
     beta_cav_Gs_f_yr ~ (
-        ifelse(beta_cav_Gs_f_rr > 0.0, √(beta_cav_Gs_f_rr), 0.0) +
+        sqrt(max(0.0, beta_cav_Gs_f_rr)) +
         beta_cav_Gs_f_d / 2.0 +
         beta_cav_Gs_f_b * beta_cav_Gs_f_c / 6.0 - beta_cav_Gs_f_b^3.0 / 27.0
     )
-    beta_cav_Gs_f_yi ~ ifelse(beta_cav_Gs_f_rr < 0.0, √(-beta_cav_Gs_f_rr), 0.0)
+    beta_cav_Gs_f_yi ~ sqrt(max(0.0, -beta_cav_Gs_f_rr))
     beta_cav_Gs_f_mag ~
         (
             beta_cav_Gs_f_yr * beta_cav_Gs_f_yr + beta_cav_Gs_f_yi * beta_cav_Gs_f_yi
@@ -729,7 +578,7 @@ using ModelingToolkit: t_nounits as t, D_nounits as D
         beta_cav_Gs_f_b / 3.0
     beta_cav_Gs_f_i ~ beta_cav_Gs_f_mag * sin(beta_cav_Gs_f_arg) * (1.0 + beta_cav_Gs_f_x)
     # Concentration of free Gs in the caveolar subspace
-    beta_cav_Gs_f ~ √(beta_cav_Gs_f_r * beta_cav_Gs_f_r + beta_cav_Gs_f_i * beta_cav_Gs_f_i)
+    beta_cav_Gs_f ~ sqrt(beta_cav_Gs_f_r * beta_cav_Gs_f_r + beta_cav_Gs_f_i * beta_cav_Gs_f_i)
     # Concentration of free non-phosphorylated beta1AR in caveolar subspace
     beta_cav_Rb1_f ~
         beta_cav_Rb1_np_tot /
@@ -796,9 +645,9 @@ using ModelingToolkit: t_nounits as t, D_nounits as D
         beta_eca_Gs_f_c^3.0 / 27.0 +
         beta_eca_Gs_f_d * beta_eca_Gs_f_d / 4.0
     )
-    beta_eca_Gs_f_yi ~ ifelse(beta_eca_Gs_f_rr < 0.0, √(-beta_eca_Gs_f_rr), 0.0)
+    beta_eca_Gs_f_yi ~ sqrt(max(0.0, -beta_eca_Gs_f_rr))
     beta_eca_Gs_f_yr ~ (
-        ifelse(beta_eca_Gs_f_rr > 0.0, √(beta_eca_Gs_f_rr), 0.0) +
+        sqrt(max(0.0, beta_eca_Gs_f_rr)) +
         beta_eca_Gs_f_d / 2.0 +
         beta_eca_Gs_f_b * beta_eca_Gs_f_c / 6.0 - beta_eca_Gs_f_b^3.0 / 27.0
     )
@@ -815,7 +664,7 @@ using ModelingToolkit: t_nounits as t, D_nounits as D
         beta_eca_Gs_f_mag * cos(beta_eca_Gs_f_arg) * (1.0 - beta_eca_Gs_f_x) -
         beta_eca_Gs_f_b / 3.0
     # Concentration of free Gs in the caveolar subspace
-    beta_eca_Gs_f ~ √(beta_eca_Gs_f_r * beta_eca_Gs_f_r + beta_eca_Gs_f_i * beta_eca_Gs_f_i)
+    beta_eca_Gs_f ~ sqrt(beta_eca_Gs_f_r * beta_eca_Gs_f_r + beta_eca_Gs_f_i * beta_eca_Gs_f_i)
     # Concentration of free non-phosphorylated beta1AR in the extracaveolar space
     beta_eca_Rb1_f ~
         beta_eca_Rb1_np_tot /
@@ -850,7 +699,7 @@ using ModelingToolkit: t_nounits as t, D_nounits as D
     # Concentration of free PKA-phosphorylated beta2AR in the extracaveolar space
     beta_eca_Rb2_pka_f ~
         (
-            -beta_eca_Rb2_pka_f_b + √(
+            -beta_eca_Rb2_pka_f_b + sqrt(
                 beta_eca_Rb2_pka_f_b * beta_eca_Rb2_pka_f_b -
                 4.0 * c99 * beta_eca_Rb2_pka_f_c,
             )
@@ -882,7 +731,7 @@ using ModelingToolkit: t_nounits as t, D_nounits as D
     # Concentration of free non-phosphorylated beta-1 AR in the cytoplasm
     Rb1_np_f ~
         (
-            -beta_cyt_Rb1_np_f_b + √(
+            -beta_cyt_Rb1_np_f_b + sqrt(
                 beta_cyt_Rb1_np_f_b * beta_cyt_Rb1_np_f_b -
                 4.0 * c106 * beta_cyt_Rb1_np_f_c,
             )
@@ -911,7 +760,7 @@ using ModelingToolkit: t_nounits as t, D_nounits as D
     # Concentration of free PKA-phosphorylated beta2AR in the caveolar subspace
     beta_cav_Rb2_pka_f ~
         (
-            -beta_cav_Rb2_pka_f_b + √(
+            -beta_cav_Rb2_pka_f_b + sqrt(
                 beta_cav_Rb2_pka_f_b * beta_cav_Rb2_pka_f_b -
                 4.0 * c90 * beta_cav_Rb2_pka_f_c,
             )
@@ -1164,7 +1013,7 @@ using ModelingToolkit: t_nounits as t, D_nounits as D
     # Mod_PP1_Inhibition()
     pp1_PP1f_cyt_sum ~ c38 - c37 + inhib1_p
     # Concentration of uninhibited PP1 in the cytosolic compartment
-    PP1f_cyt ~ 0.5 * (√(pp1_PP1f_cyt_sum^2.0 + 4.0 * c38 * c37) - pp1_PP1f_cyt_sum)
+    PP1f_cyt ~ 0.5 * (sqrt(pp1_PP1f_cyt_sum^2.0 + 4.0 * c38 * c37) - pp1_PP1f_cyt_sum)
     di ~ c39 - inhib1_p
     # Concentration of phosphorylated PP1 inhibitor 1 (cytoplasmic)
         D(inhib1_p) ~
