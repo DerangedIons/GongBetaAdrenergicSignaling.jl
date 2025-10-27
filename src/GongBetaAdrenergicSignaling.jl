@@ -1,66 +1,22 @@
 """
     GongBetaAdrenergicSignaling
 
-A Julia package providing a ModelingToolkit.jl implementation of the Gong et al. (2020)
-beta-adrenergic signaling model for cardiac myocytes.
-
-Reference:
-Quantitative analysis of variability in an integrated model of human ventricular
-electrophysiology and β-adrenergic signaling by Jingqi Q.X. Gong, Monica E. Susilo,
-Anna Sher, Cynthia J. Musante, Eric A. Sobie
-DOI: https://doi.org/10.1016/j.yjmcc.2020.04.009
-
-# Features
-- **57 state variables**: G-protein signaling, cAMP dynamics, PKA activation, PDE phosphorylation,
-  PP1 inhibition, and substrate phosphorylation
-- **167 parameters**: Automatically computed from structural parameters `iso_conc` and `radiusmultiplier`
-- **Default initial conditions**: Steady-state values for baseline (no isoproterenol) conditions
-- **Observable outputs**: Effective phosphorylation fractions for 8 cardiac substrates (ICaL, IKs, PLB, TnI, INa, INaK, RyR, IKur)
+ModelingToolkit.jl implementation of the Gong et al. (2020) beta-adrenergic signaling
+model for cardiac myocytes. The model contains 57 states, 167 parameters, and computes
+effective phosphorylation fractions for 8 cardiac ion channels and regulatory proteins.
 
 # Exports
-- `GongBetaAdrenergic`: MTK model with structural parameters `iso_conc` (μM) and `radiusmultiplier`
-- `compute_parameters`: Standalone utility to compute all 167 parameters from `iso_conc` and `radiusmultiplier`
-- `effective_fractions!`: Compute effective phosphorylation fractions for 8 cardiac substrates (ICaL, IKs, PLB, TnI, INa, INaK, RyR, IKur)
+- `GongBetaAdrenergic`: MTK model constructor
+- `compute_parameters`: Compute parameters from `iso_conc` and `radiusmultiplier`
+- `effective_fractions!`: Compute phosphorylation fractions for cardiac substrates
 
-# Basic Usage
-```julia
-using GongBetaAdrenergicSignaling
-using OrdinaryDiffEq
+See the README for usage examples and documentation.
 
-# Create model with defaults (iso_conc=0.0, radiusmultiplier=1.0)
-@mtkcompile sys = GongBetaAdrenergic()
-
-# Create ODE problem with default initial conditions
-prob = ODEProblem(sys, [], (0.0, 1000.0))
-
-# Solve with appropriate stiff solver
-sol = solve(prob, Rodas5P())
-```
-
-# With Isoproterenol Stimulation
-```julia
-# Use structural parameters to set iso_conc
-@mtkcompile sys = GongBetaAdrenergic(iso_conc=1.0)
-
-# Or customize both structural parameters
-@mtkcompile sys = GongBetaAdrenergic(iso_conc=1.0, radiusmultiplier=1.2)
-
-# Create ODE problem and solve
-prob = ODEProblem(sys, [], (0.0, 1000.0))
-sol = solve(prob, Rodas5P())
-```
-
-# Advanced: Manual Parameter Computation
-```julia
-# Compute parameters explicitly (for inspection or external use)
-params = compute_parameters(1.0, 1.0)
-
-# Inspect specific parameter (e.g., c1 = iso_conc)
-params.c1  # Returns 1.0
-
-# Note: Parameters are now computed internally via structural parameters,
-# but you can still use compute_parameters() as a standalone utility
-```
+# Reference
+Gong, J.Q.X., Susilo, M.E., Sher, A., Musante, C.J., & Sobie, E.A. (2020).
+Quantitative analysis of variability in an integrated model of human ventricular
+electrophysiology and β-adrenergic signaling. Journal of Molecular and Cellular Cardiology.
+DOI: https://doi.org/10.1016/j.yjmcc.2020.04.009
 """
 module GongBetaAdrenergicSignaling
 

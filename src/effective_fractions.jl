@@ -34,36 +34,6 @@ The `output` array contains the following effective fractions:
 - All fractions are clamped to valid ranges [0.0, 1.0]
 - Based on Gong et al. (2020) beta-adrenergic signaling model
 
-# Example
-```julia
-using GongBetaAdrenergicSignaling
-using OrdinaryDiffEq
-
-# Solve signaling model
-@mtkcompile sys = GongBetaAdrenergic(iso_conc=0.1)
-prob = ODEProblem(sys, [], (0.0, 5000.0))
-sol = solve(prob, Rodas5P())
-
-# Get state and parameter ordering from reference implementation
-include("references/julia/signaling.jl")
-using .SignalingModel
-
-# Build reference parameters
-c = zeros(167)
-SignalingModel.ConstantsSignalingMyokit2!(c, 0.1, 1.0)
-
-# Create state mapping (MTK reorders states)
-u_ref = SignalingModel.get_default_initial_state()
-mapping = ... # match initial conditions to create mapping
-
-# Extract final state in reference order
-states = sol.u[end][mapping]
-
-# Compute effective fractions
-fractions = zeros(8)
-effective_fractions!(fractions, states, c)
-```
-
 # Reference
 Gong, J.Q.X., Susilo, M.E., Sher, A., Musante, C.J., & Sobie, E.A. (2020).
 Quantitative analysis of variability in an integrated model of human ventricular
