@@ -20,6 +20,7 @@ DOI: https://doi.org/10.1016/j.yjmcc.2020.04.009
 # Exports
 - `GongBetaAdrenergic`: MTK model with structural parameters `iso_conc` (μM) and `radiusmultiplier`
 - `compute_parameters`: Standalone utility to compute all 167 parameters from `iso_conc` and `radiusmultiplier`
+- `effective_fractions!`: Compute effective phosphorylation fractions for 8 cardiac substrates (ICaL, IKs, PLB, TnI, INa, INaK, RyR, IKur)
 
 # Basic Usage
 ```julia
@@ -72,6 +73,9 @@ include("parameters.jl")
 # Load the @mtkmodel definition (exports GongBetaAdrenergic directly)
 include("model.jl")
 
-export GongBetaAdrenergic, compute_parameters
+# Load effective fractions computation
+include("effective_fractions.jl")
+
+export GongBetaAdrenergic, compute_parameters, effective_fractions!
 
 end
