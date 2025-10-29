@@ -10,7 +10,7 @@ A Julia package providing a ModelingToolkit.jl implementation of the Gong et al.
 - **57 state variables**: G-protein signaling, cAMP dynamics, PKA activation, PDE phosphorylation, PP1 inhibition, and substrate phosphorylation
 - **167 parameters**: Automatically computed from structural parameters
 - **Isoproterenol stimulation**: Simply set `iso_conc` and all 167 parameters automatically update
-- **Phosphorylation outputs**: Compute effective fractions for 8 cardiac ion channels/proteins
+- **Phosphorylation observables**: Built-in observables for effective fractions of 8 cardiac ion channels/proteins
 - **ModelingToolkit integration**: Symbolic model construction with automatic code generation
 
 ## Basic Usage
@@ -54,27 +54,35 @@ You can also adjust the cell geometry via `radiusmultiplier`:
 @mtkcompile sys = GongBetaAdrenergic(iso_conc=1.0, radiusmultiplier=1.2)
 ```
 
-## Computing Phosphorylation Fractions
+## Phosphorylation Fraction Observables
 
-The model outputs can be post-processed to compute effective phosphorylation fractions for cardiac substrates:
+The model automatically computes effective phosphorylation fractions for 8 cardiac substrates as **observables**. These are available directly from the solution:
 
 ```julia
 using GongBetaAdrenergicSignaling
+using OrdinaryDiffEq
 
-# After solving the model...
-fractions = zeros(8)
-effective_fractions!(fractions, states, parameters)
+# Solve the model
+@mtkcompile sys = GongBetaAdrenergic(iso_conc=1.0)
+prob = ODEProblem(sys, [], (0.0, 5000.0))
+sol = solve(prob, Rodas5P())
 
-# fractions now contains:
-# [1] ICaL  - L-type calcium channel
-# [2] IKs   - Slow delayed rectifier K+ channel
-# [3] PLB   - Phospholamban (SERCA regulation)
-# [4] TnI   - Troponin I (myofilament Ca2+ sensitivity)
-# [5] INa   - Sodium channel
-# [6] INaK  - Na+/K+ pump
-# [7] RyR   - Ryanodine receptor (Ca2+ release)
-# [8] IKur  - Ultra-rapid delayed rectifier K+ channel
+# Access phosphorylation fractions (available at all time points)
+fICaL_PKA = sol[sys.fICaL_PKA]   # L-type calcium channel
+fIKs_PKA = sol[sys.fIKs_PKA]     # Slow delayed rectifier K+ channel
+fPLB_PKA = sol[sys.fPLB_PKA]     # Phospholamban (SERCA regulation)
+fTnI_PKA = sol[sys.fTnI_PKA]     # Troponin I (myofilament Ca2+ sensitivity)
+fINa_PKA = sol[sys.fINa_PKA]     # Sodium channel
+fINaK_PKA = sol[sys.fINaK_PKA]   # Na+/K+ pump
+fRyR_PKA = sol[sys.fRyR_PKA]     # Ryanodine receptor (Ca2+ release)
+fIKur_PKA = sol[sys.fIKur_PKA]   # Ultra-rapid delayed rectifier K+ channel
+fMyBPC_PKA = sol[sys.fMyBPC_PKA] # Myosin binding protein C
+
+# Extract final values
+final_fICaL = sol[sys.fICaL_PKA][end]
 ```
+
+These observables are computed automatically during the solve and represent the effective fraction of each substrate that is phosphorylated by PKA.
 
 ## Reference
 

@@ -530,6 +530,18 @@ using ModelingToolkit: t_nounits as t, D_nounits as D
         iks_sig_IKsp_dif(t)
         akap_sig_RyRp_dif(t)
         akap_sig_ICaLp_dif(t)
+
+        # Effective phosphorylation fraction observables (for coupling to TWorld)
+        fICaL_PKA(t)
+        fIKs_PKA(t)
+        fPLB_PKA(t)
+        fTnI_PKA(t)
+        fINa_PKA(t)
+        fINaK_PKA(t)
+        fRyR_PKA(t)
+        fIKur_PKA(t)
+        fMyBPC_PKA(t)
+        Whole_cell_PP1(t)
     end
 
     @equations begin
@@ -1074,5 +1086,70 @@ using ModelingToolkit: t_nounits as t, D_nounits as D
             c157 * pka_cav_C * akap_sig_ICaLp_dif / (c159 + akap_sig_ICaLp_dif) -
             c158 * c36 * ICaLp / (c160 + ICaLp)
         )
+
+    # ========== EFFECTIVE PHOSPHORYLATION FRACTIONS ==========
+    # These observables compute effective fractions for coupling to TWorld model
+    # Based on effective_fractions.jl formulas
+
+    # ICaL effective fraction (L-type calcium channel)
+    fICaL_PKA ~ let
+        fp = (ICaLp + c163) / c156
+        fp_clamped = ifelse(fp < 0.0001, 0.0001, ifelse(fp > 0.9999, 0.9999, fp))
+        raw = (fp_clamped - c166) / (0.9273 - c166)
+        ifelse(raw < 0.0, 0.0, ifelse(raw > 1.0, 1.0, raw))
+    end
+
+    # IKs effective fraction (slow delayed rectifier K+ channel)
+    fIKs_PKA ~ let
+        fp = (IKsp + c145) / c144
+        fp_clamped = ifelse(fp < 0.0001, 0.0001, ifelse(fp > 0.9999, 0.9999, fp))
+        raw = (fp_clamped - c167) / (0.785 - c167)
+        ifelse(raw < 0.0, 0.0, ifelse(raw > 1.0, 1.0, raw))
+    end
+
+    # PLB effective fraction (phospholamban, affects SERCA)
+    fPLB_PKA ~ let
+        raw = (iup_f_plb - 0.6662) / (0.9945 - 0.6662)
+        ifelse(raw < 0.0, 0.0, ifelse(raw > 1.0, 1.0, raw))
+    end
+
+    # TnI effective fraction (troponin I, affects calcium sensitivity)
+    fTnI_PKA ~ let
+        raw = (f_tni - 0.6735188) / (0.9991797 - 0.6735188)
+        ifelse(raw < 0.0, 0.0, ifelse(raw > 1.0, 1.0, raw))
+    end
+
+    # INa effective fraction (sodium channel)
+    fINa_PKA ~ let
+        raw = (ina_f_ina - 0.2394795) / (0.9501431 - 0.2394795)
+        ifelse(raw < 0.0, 0.0, ifelse(raw > 1.0, 1.0, raw))
+    end
+
+    # INaK effective fraction (Na+/K+ pump)
+    fINaK_PKA ~ let
+        raw = (f_inak - 0.1263453) / (0.9980137 - 0.1263453)
+        ifelse(raw < 0.0, 0.0, ifelse(raw > 1.0, 1.0, raw))
+    end
+
+    # RyR effective fraction (ryanodine receptor, calcium release)
+    fRyR_PKA ~ let
+        fp = (RyRp + c161) / c151
+        fp_clamped = ifelse(fp < 0.0001, 0.0001, ifelse(fp > 0.9999, 0.9999, fp))
+        raw = (fp_clamped - c165) / (0.9586 - c165)
+        ifelse(raw < 0.0, 0.0, ifelse(raw > 1.0, 1.0, raw))
+    end
+
+    # IKur effective fraction (ultra-rapid delayed rectifier K+ channel)
+    fIKur_PKA ~ let
+        raw = (f_ikur - 5.893798e-02) / (0.393747 - 5.893798e-02)
+        ifelse(raw < 0.0, 0.0, ifelse(raw > 1.0, 1.0, raw))
+    end
+
+    # MyBPC effective fraction (myosin binding protein C, uses same as TnI)
+    fMyBPC_PKA ~ fTnI_PKA
+
+    # Whole cell PP1 concentration (protein phosphatase 1)
+    # PP1f_cyt is already computed in the model (line 1016)
+    Whole_cell_PP1 ~ c36 / c5 + c35 / c6 + PP1f_cyt / c7
     end
 end

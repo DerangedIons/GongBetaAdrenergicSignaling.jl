@@ -6,9 +6,8 @@ model for cardiac myocytes. The model contains 57 states, 167 parameters, and co
 effective phosphorylation fractions for 8 cardiac ion channels and regulatory proteins.
 
 # Exports
-- `GongBetaAdrenergic`: MTK model constructor
+- `GongBetaAdrenergic`: MTK model constructor with built-in observable outputs for 8 phosphorylation fractions
 - `compute_parameters`: Compute parameters from `iso_conc` and `radiusmultiplier`
-- `effective_fractions!`: Compute phosphorylation fractions for cardiac substrates
 
 See the README for usage examples and documentation.
 
@@ -29,9 +28,19 @@ include("parameters.jl")
 # Load the @mtkmodel definition (exports GongBetaAdrenergic directly)
 include("model.jl")
 
-# Load effective fractions computation
-include("effective_fractions.jl")
+export GongBetaAdrenergic, compute_parameters
 
-export GongBetaAdrenergic, compute_parameters, effective_fractions!
+# Precompilation workload
+using PrecompileTools: @compile_workload
+
+@compile_workload begin
+    # Precompile parameter computation (baseline and with iso)
+    compute_parameters()
+    compute_parameters(1.0, 1.0)
+
+    # Precompile model construction
+    @mtkcompile sys_baseline = GongBetaAdrenergic()
+    @mtkcompile sys_stim = GongBetaAdrenergic(iso_conc=1.0)
+end
 
 end
