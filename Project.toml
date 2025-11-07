@@ -1,6 +1,6 @@
 name = "GongBetaAdrenergicSignaling"
 uuid = "c9319e42-2a68-4d31-a4ce-d28d39ea7682"
-version = "0.0.1"
+version = "1.0.0"
 authors = ["Kyle Beggs <beggskw@gmail.com> and contributors"]
 
 [deps]
