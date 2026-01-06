@@ -6,7 +6,8 @@ This example demonstrates:
 2. Printing phosphorylation observables before and after simulation
 """
 
-using Pkg; Pkg.activate(@__DIR__)
+using Pkg;
+Pkg.activate(@__DIR__)
 using GongBetaAdrenergicSignaling
 using OrdinaryDiffEq
 

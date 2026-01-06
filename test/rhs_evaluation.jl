@@ -87,7 +87,9 @@ end
     SignalingModel.rhs_signaling!(du_ref, u_ref, c, t_eval)
 
     # Build MTK model with isoproterenol
-    @mtkcompile sys = GongBetaAdrenergic(iso_conc=iso_conc, radiusmultiplier=radiusmultiplier)
+    @mtkcompile sys = GongBetaAdrenergic(
+        iso_conc=iso_conc, radiusmultiplier=radiusmultiplier
+    )
 
     # Create ODE problem with default initial conditions
     prob_mtk = ODEProblem(sys, [], (0.0, 1.0))

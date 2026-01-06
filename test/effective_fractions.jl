@@ -24,7 +24,9 @@
     ]
 
     # Build MTK model with isoproterenol
-    @mtkcompile sys = GongBetaAdrenergic(iso_conc=iso_conc, radiusmultiplier=radiusmultiplier)
+    @mtkcompile sys = GongBetaAdrenergic(
+        iso_conc=iso_conc, radiusmultiplier=radiusmultiplier
+    )
 
     # Create ODE problem and solve with Euler method
     prob_mtk = ODEProblem(sys, [], tspan)
