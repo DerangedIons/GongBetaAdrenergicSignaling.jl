@@ -42,7 +42,7 @@ using PrecompileTools: @compile_workload
     sys_baseline = GongBetaAdrenergic()
     compiled_baseline = mtkcompile(sys_baseline)
 
-    sys_stim = GongBetaAdrenergic(iso_conc=1.0)
+    sys_stim = GongBetaAdrenergic(iso_conc = 1.0)
     compiled_stim = mtkcompile(sys_stim)
 end
 

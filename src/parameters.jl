@@ -26,7 +26,7 @@ params = compute_parameters(1.0, 1.0)
 @mtkcompile sys = GongBetaAdrenergic(; params...)
 ```
 """
-function compute_parameters(iso_conc::Real=0.0, radiusmultiplier::Real=1.0)
+function compute_parameters(iso_conc::Real = 0.0, radiusmultiplier::Real = 1.0)
     c = zeros(Float64, 167)
 
     # iso
@@ -36,7 +36,7 @@ function compute_parameters(iso_conc::Real=0.0, radiusmultiplier::Real=1.0)
 
     # Cell geometry
     length = 0.01  # Cell length
-    cell_pi = 3.14159265358979312e00  # pi
+    cell_pi = 3.14159265358979312e0  # pi
     radius = 0.0011 * radiusmultiplier  # Cell radius
     volume = 1000.0 * cell_pi * radius * radius * length  # Cell volume
 
@@ -49,9 +49,9 @@ function compute_parameters(iso_conc::Real=0.0, radiusmultiplier::Real=1.0)
     c[7] = volume / c[4]  # Ratio of whole volume to cytoplasm volume
 
     # cAMP
-    c[8] = 5e-15 * 1000000.0  # Rate of cAMP diffusion between caveolar and cytosolic compartments
+    c[8] = 5.0e-15 * 1000000.0  # Rate of cAMP diffusion between caveolar and cytosolic compartments
     c[9] = 7.5e-14 * 1000000.0  # Rate of cAMP diffusion between caveolar and extracaveolar compartments
-    c[10] = 9e-15 * 1000000.0  # Rate of cAMP diffusion between extracaveolar and cytosolic compartments
+    c[10] = 9.0e-15 * 1000000.0  # Rate of cAMP diffusion between extracaveolar and cytosolic compartments
 
     # PKA (See pg 29 - 32 of Heijman supplementary document)
     PKA_tot = 0.5  # Total cellular concentration of PKA holoenzyme (umol/L)
@@ -110,7 +110,7 @@ function compute_parameters(iso_conc::Real=0.0, radiusmultiplier::Real=1.0)
     c[31] = 0.010145  # Rate of phosphorylation of inhibitor 1 by PKA
     c[32] = 0.0035731  # Rate of dephosphorylation if inhibitor 1
     c[33] = 0.001469  # Affinity of inhibitor 1 for PKA catalytic subunit
-    c[34] = 1.95259999999999991e-05  # Affinity of inhibitor 1 for PP2A
+    c[34] = 1.95259999999999991e-5  # Affinity of inhibitor 1 for PP2A
 
     c[35] = 0.1  # PP1 concentration in the extracaveolar compartment
     c[36] = 0.25  # PP1 concentration in the caveolar compartment
@@ -124,7 +124,7 @@ function compute_parameters(iso_conc::Real=0.0, radiusmultiplier::Real=1.0)
     # PDE (see pg 26 - 29 of Heijman supplementary document)
     PDE2_tot = 0.029268  # Total cellular concentration of PDE2
     f_pde2_cav = 0.16957  # Fraction of PDE2 located in caveolar compartment
-    f_pde2_eca = 2.12570000000000006e-04  # Fraction of PDE2 located in extracaveolar compartment
+    f_pde2_eca = 2.12570000000000006e-4  # Fraction of PDE2 located in extracaveolar compartment
     f_pde2_cyt = 1.0 - f_pde2_cav - f_pde2_eca  # Fraction of PDE2 located in cytosolic compartment
     f_pde2_part = f_pde2_cav + f_pde2_eca  # Fraction of PDE2 located in the "particulate fraction" (cav + eca)
 
@@ -161,9 +161,9 @@ function compute_parameters(iso_conc::Real=0.0, radiusmultiplier::Real=1.0)
 
     pde_PDE3_tot_alpha =
         r_pde3_cyt * (
-            f_pde4_part * (1.0 + r_pde34_frac - r_pde34_frac * f_pde2_part - f_pde_part) +
+        f_pde4_part * (1.0 + r_pde34_frac - r_pde34_frac * f_pde2_part - f_pde_part) +
             f_pde2_part * (f_pde_part - 1.0)
-        ) + r_pde34_frac * f_pde4_part * (f_pde_part - f_pde2_part)
+    ) + r_pde34_frac * f_pde4_part * (f_pde_part - f_pde2_part)
     pde_PDE3_tot_beta =
         f_pde4_part * (1.0 + r_pde34_frac + f_pde_part * (r_pde3_cyt - r_pde34_frac)) -
         f_pde_part * (1.0 + r_pde3_cyt)
@@ -322,7 +322,7 @@ function compute_parameters(iso_conc::Real=0.0, radiusmultiplier::Real=1.0)
     # iup
     c[132] = 0.11348  # Rate of PLB phosphorylation by PKA
     c[133] = 0.48302  # Rate of PLB dephosphorylation by phosphatases
-    c[134] = 9.88539999999999992e-04  # Affinity of PLB for phosphorylation by PKA
+    c[134] = 9.88539999999999992e-4  # Affinity of PLB for phosphorylation by PKA
     c[135] = 0.80737  # Affinity of PLB for dephosphorylation by phosphatases
 
     # iKur
@@ -334,8 +334,8 @@ function compute_parameters(iso_conc::Real=0.0, radiusmultiplier::Real=1.0)
     # iKs
     c[140] = 0.16305  # Rate of IKs channel phosphorylation by PKA
     c[141] = 1.0542  # Rate of IKs channel dephosphorylation by phosphatases
-    c[142] = 9.97940000000000003e-05  # Affinity of IKs channels for phosphorylation by PKA
-    c[143] = 1.11470000000000002e-04  # Affinity of IKs channels for dephosphorylation by phosphatases
+    c[142] = 9.97940000000000003e-5  # Affinity of IKs channels for phosphorylation by PKA
+    c[143] = 1.11470000000000002e-4  # Affinity of IKs channels for dephosphorylation by phosphatases
 
     M = 0.01  # Binding affinity between PKA and Yotiao
     iks_sig_L = 0.0001  # Binding affinity between PKA and Yotiao
@@ -349,12 +349,12 @@ function compute_parameters(iso_conc::Real=0.0, radiusmultiplier::Real=1.0)
     iks_sig_PP1f_eca_sum = 1.0 + (Yotiao - c[35]) / iks_sig_K
     PP1f_eca = (
         iks_sig_K / 2.0 *
-        (√(iks_sig_PP1f_eca_sum^2.0 + 4.0 * c[35] / iks_sig_K) - iks_sig_PP1f_eca_sum)
+            (√(iks_sig_PP1f_eca_sum^2.0 + 4.0 * c[35] / iks_sig_K) - iks_sig_PP1f_eca_sum)
     )  # Concentration of PP1 not bound to AKAPs in the extracaveolar compartment
     iks_sig_IKsf_sum = 1.0 + (Yotiao - c[144]) / iks_sig_L
     IKsf = (
         iks_sig_L / 2.0 *
-        (√(iks_sig_IKsf_sum^2.0 + 4.0 * c[144] / iks_sig_L) - iks_sig_IKsf_sum)
+            (√(iks_sig_IKsf_sum^2.0 + 4.0 * c[144] / iks_sig_L) - iks_sig_IKsf_sum)
     )  # Concentration of IKs not bound to AKAPs in the extracaveolar compartment
     Yotiaof =
         (Yotiao - c[144] + IKsf) / ((1.0 + PP1f_eca / iks_sig_K) * (1.0 + iks_sig_PKAf / M))
@@ -364,7 +364,7 @@ function compute_parameters(iso_conc::Real=0.0, radiusmultiplier::Real=1.0)
     # Troponin
     c[147] = 0.10408  # Rate of Troponin phosphorylation by PKA
     c[148] = 0.052633  # Rate of Troponin dephosphorylation by phosphatases
-    c[149] = 2.71430000000000008e-05  # Affinity of Troponin for phosphorylation by PKA
+    c[149] = 2.71430000000000008e-5  # Affinity of Troponin for phosphorylation by PKA
     c[150] = 0.26714  # Affinity of Troponin for dephosphorylation by phosphatases
 
     # RyR and iCaL  -  Substrates with A-Kinase Anchoring Protein (AKAP)
@@ -372,7 +372,7 @@ function compute_parameters(iso_conc::Real=0.0, radiusmultiplier::Real=1.0)
     RyR_akap = 0.125  # Total concentration of RyR AKAP
     c[152] = 0.0025548  # Rate of RyR phosphorylation by PKA
     c[153] = 0.0038257  # Rate of RyR dephosphorylation by phosphatases
-    c[154] = 6.62979999999999944e-05  # Affinity of RyR for phosphorylation by PKA
+    c[154] = 6.62979999999999944e-5  # Affinity of RyR for phosphorylation by PKA
     c[155] = 0.043003  # Affinity of RyR for dephosphorylation by phosphatases
     Mr = 0.01  # Binding affinity between PKA and ICaL AKAP
     Lr = 0.0001  # Binding affinity between RyR and AKAP
@@ -383,9 +383,9 @@ function compute_parameters(iso_conc::Real=0.0, radiusmultiplier::Real=1.0)
 
     c[156] = 0.025  # Total concentration of ICaL channels
     ICaL_akap = 0.025  # Total concentration of ICaL AKAP
-    c[157] = 5.10090000000000044e-04  # Rate of ICaL channel phosphorylation by PKA
+    c[157] = 5.10090000000000044e-4  # Rate of ICaL channel phosphorylation by PKA
     c[158] = 0.0006903  # Rate of ICaL channel dephosphorylation by phosphatases
-    c[159] = 1.27019999999999993e-06  # Affinity of ICaL channels for phosphorylation by PKA
+    c[159] = 1.27019999999999993e-6  # Affinity of ICaL channels for phosphorylation by PKA
     c[160] = 0.0063064  # Affinity of ICaL channels for dephosphorylation by phosphatases
     Mi = 0.01  # Binding affinity between PKA and ICaL AKAP
     Li = 0.0001  # Binding affinity between ICaL channel and AKAP
@@ -400,25 +400,25 @@ function compute_parameters(iso_conc::Real=0.0, radiusmultiplier::Real=1.0)
     akap_sig_PP1f_cav_d = c[36] * Ki * Kr
     akap_sig_PP1f_cav_rr = (
         -akap_sig_PP1f_cav_d / 27.0 * akap_sig_PP1f_cav_b^3.0 -
-        akap_sig_PP1f_cav_b *
-        akap_sig_PP1f_cav_b *
-        akap_sig_PP1f_cav_c *
-        akap_sig_PP1f_cav_c / 108.0 +
-        akap_sig_PP1f_cav_b * akap_sig_PP1f_cav_c * akap_sig_PP1f_cav_d / 6.0 +
-        akap_sig_PP1f_cav_c^3.0 / 27.0 +
-        akap_sig_PP1f_cav_d * akap_sig_PP1f_cav_d / 4.0
+            akap_sig_PP1f_cav_b *
+            akap_sig_PP1f_cav_b *
+            akap_sig_PP1f_cav_c *
+            akap_sig_PP1f_cav_c / 108.0 +
+            akap_sig_PP1f_cav_b * akap_sig_PP1f_cav_c * akap_sig_PP1f_cav_d / 6.0 +
+            akap_sig_PP1f_cav_c^3.0 / 27.0 +
+            akap_sig_PP1f_cav_d * akap_sig_PP1f_cav_d / 4.0
     )
     akap_sig_PP1f_cav_yi = ((akap_sig_PP1f_cav_rr < 0.0) ? √(-akap_sig_PP1f_cav_rr) : 0.0)
     akap_sig_PP1f_cav_yr = (
         ((akap_sig_PP1f_cav_rr > 0.0) ? √(akap_sig_PP1f_cav_rr) : 0.0) +
-        akap_sig_PP1f_cav_d / 2.0 +
-        akap_sig_PP1f_cav_b * akap_sig_PP1f_cav_c / 6.0 - akap_sig_PP1f_cav_b^3.0 / 27.0
+            akap_sig_PP1f_cav_d / 2.0 +
+            akap_sig_PP1f_cav_b * akap_sig_PP1f_cav_c / 6.0 - akap_sig_PP1f_cav_b^3.0 / 27.0
     )
     akap_sig_PP1f_cav_mag =
         (
-            akap_sig_PP1f_cav_yr * akap_sig_PP1f_cav_yr +
+        akap_sig_PP1f_cav_yr * akap_sig_PP1f_cav_yr +
             akap_sig_PP1f_cav_yi * akap_sig_PP1f_cav_yi
-        )^(1.0 / 6.0)
+    )^(1.0 / 6.0)
     akap_sig_PP1f_cav_arg = atan(akap_sig_PP1f_cav_yi / akap_sig_PP1f_cav_yr) / 3.0
     akap_sig_PP1f_cav_x =
         (akap_sig_PP1f_cav_c / 3.0 - akap_sig_PP1f_cav_b * akap_sig_PP1f_cav_b / 9.0) /
@@ -426,28 +426,28 @@ function compute_parameters(iso_conc::Real=0.0, radiusmultiplier::Real=1.0)
 
     PP1f_cav = (
         akap_sig_PP1f_cav_mag * cos(akap_sig_PP1f_cav_arg) * (1.0 - akap_sig_PP1f_cav_x) -
-        akap_sig_PP1f_cav_b / 3.0
+            akap_sig_PP1f_cav_b / 3.0
     )  # Caveolar concentration of free PP1
     akap_sig_PKAf_d = c[12] * Mi * Mr
     akap_sig_PKAf_b = ICaL_akap + RyR_akap + Mi + Mr - c[12]
     akap_sig_PKAf_c = ICaL_akap * Mr + RyR_akap * Mi + Mi * Mr - c[12] * (Mi + Mr)
     akap_sig_PKAf_rr = (
         -akap_sig_PKAf_d / 27.0 * akap_sig_PKAf_b^3.0 -
-        akap_sig_PKAf_b * akap_sig_PKAf_b * akap_sig_PKAf_c * akap_sig_PKAf_c / 108.0 +
-        akap_sig_PKAf_b * akap_sig_PKAf_c * akap_sig_PKAf_d / 6.0 +
-        akap_sig_PKAf_c^3.0 / 27.0 +
-        akap_sig_PKAf_d * akap_sig_PKAf_d / 4.0
+            akap_sig_PKAf_b * akap_sig_PKAf_b * akap_sig_PKAf_c * akap_sig_PKAf_c / 108.0 +
+            akap_sig_PKAf_b * akap_sig_PKAf_c * akap_sig_PKAf_d / 6.0 +
+            akap_sig_PKAf_c^3.0 / 27.0 +
+            akap_sig_PKAf_d * akap_sig_PKAf_d / 4.0
     )
     akap_sig_PKAf_yr = (
         ((akap_sig_PKAf_rr > 0.0) ? √(akap_sig_PKAf_rr) : 0.0) +
-        akap_sig_PKAf_d / 2.0 +
-        akap_sig_PKAf_b * akap_sig_PKAf_c / 6.0 - akap_sig_PKAf_b^3.0 / 27.0
+            akap_sig_PKAf_d / 2.0 +
+            akap_sig_PKAf_b * akap_sig_PKAf_c / 6.0 - akap_sig_PKAf_b^3.0 / 27.0
     )
     akap_sig_PKAf_yi = ((akap_sig_PKAf_rr < 0.0) ? √(-akap_sig_PKAf_rr) : 0.0)
     akap_sig_PKAf_mag =
         (
-            akap_sig_PKAf_yr * akap_sig_PKAf_yr + akap_sig_PKAf_yi * akap_sig_PKAf_yi
-        )^(1.0 / 6.0)
+        akap_sig_PKAf_yr * akap_sig_PKAf_yr + akap_sig_PKAf_yi * akap_sig_PKAf_yi
+    )^(1.0 / 6.0)
     akap_sig_PKAf_arg = atan(akap_sig_PKAf_yi / akap_sig_PKAf_yr) / 3.0
     akap_sig_PKAf_x =
         (akap_sig_PKAf_c / 3.0 - akap_sig_PKAf_b * akap_sig_PKAf_b / 9.0) /
@@ -455,7 +455,7 @@ function compute_parameters(iso_conc::Real=0.0, radiusmultiplier::Real=1.0)
 
     akap_sig_PKAf = (
         akap_sig_PKAf_mag * cos(akap_sig_PKAf_arg) * (1.0 - akap_sig_PKAf_x) -
-        akap_sig_PKAf_b / 3.0
+            akap_sig_PKAf_b / 3.0
     )  # Caveolar concentration of free PKA
 
     RyR_akapf =

@@ -44,7 +44,7 @@
 
     for i in 1:length(u0_ref)
         for j in 1:length(u0_mtk)
-            if isapprox(u0_ref[i], u0_mtk[j], atol=1e-15)
+            if isapprox(u0_ref[i], u0_mtk[j], atol = 1.0e-15)
                 mapping[i] = j
                 break
             end
@@ -88,7 +88,7 @@ end
 
     # Build MTK model with isoproterenol
     @mtkcompile sys = GongBetaAdrenergic(
-        iso_conc=iso_conc, radiusmultiplier=radiusmultiplier
+        iso_conc = iso_conc, radiusmultiplier = radiusmultiplier
     )
 
     # Create ODE problem with default initial conditions
@@ -108,7 +108,7 @@ end
 
     for i in 1:length(u0_ref)
         for j in 1:length(u0_mtk)
-            if isapprox(u0_ref[i], u0_mtk[j], atol=1e-15)
+            if isapprox(u0_ref[i], u0_mtk[j], atol = 1.0e-15)
                 mapping[i] = j
                 break
             end
