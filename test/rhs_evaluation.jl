@@ -123,7 +123,7 @@ end
     @test isapprox(du_ref, du_mtk[mapping])
 
     # Verify that iso_conc parameter is correctly set (c1 should equal iso_conc)
-    # Extract parameter c1 from the MTK problem
-    c1_mtk = prob_mtk.p[1][1]  # c1 is the first parameter
+    # Extract parameter c1 from the MTK problem using symbolic access
+    c1_mtk = prob_mtk.ps[sys.c1]
     @test isapprox(c1_mtk, iso_conc)
 end
