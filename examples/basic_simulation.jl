@@ -15,7 +15,7 @@ N_beats = 200
 BCL = 1000
 
 # Baseline simulation
-@mtkcompile sys = GongBetaAdrenergic(iso_conc=1.0)
+@mtkcompile sys = GongBetaAdrenergic(iso_conc = 1.0)
 prob = ODEProblem(sys, [], (0.0, N_beats * BCL))
 sol = solve(prob, Tsit5())
 
