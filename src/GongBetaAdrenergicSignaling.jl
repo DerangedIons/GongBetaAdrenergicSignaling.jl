@@ -39,8 +39,11 @@ using PrecompileTools: @compile_workload
     compute_parameters(1.0, 1.0)
 
     # Precompile model construction
-    @mtkcompile sys_baseline = GongBetaAdrenergic()
-    @mtkcompile sys_stim = GongBetaAdrenergic(iso_conc=1.0)
+    sys_baseline = GongBetaAdrenergic()
+    compiled_baseline = mtkcompile(sys_baseline)
+
+    sys_stim = GongBetaAdrenergic(iso_conc=1.0)
+    compiled_stim = mtkcompile(sys_stim)
 end
 
 end

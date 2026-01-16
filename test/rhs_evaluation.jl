@@ -87,7 +87,9 @@ end
     SignalingModel.rhs_signaling!(du_ref, u_ref, c, t_eval)
 
     # Build MTK model with isoproterenol
-    @mtkcompile sys = GongBetaAdrenergic(iso_conc=iso_conc, radiusmultiplier=radiusmultiplier)
+    @mtkcompile sys = GongBetaAdrenergic(
+        iso_conc=iso_conc, radiusmultiplier=radiusmultiplier
+    )
 
     # Create ODE problem with default initial conditions
     prob_mtk = ODEProblem(sys, [], (0.0, 1.0))
@@ -121,7 +123,7 @@ end
     @test isapprox(du_ref, du_mtk[mapping])
 
     # Verify that iso_conc parameter is correctly set (c1 should equal iso_conc)
-    # Extract parameter c1 from the MTK problem
-    c1_mtk = prob_mtk.p[1][1]  # c1 is the first parameter
+    # Extract parameter c1 from the MTK problem using symbolic access
+    c1_mtk = prob_mtk.ps[sys.c1]
     @test isapprox(c1_mtk, iso_conc)
 end

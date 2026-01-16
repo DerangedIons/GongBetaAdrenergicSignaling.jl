@@ -83,6 +83,19 @@ final_fICaL = sol[sys.fICaL_PKA][end]
 
 These observables are computed automatically during the solve and represent the effective fraction of each substrate that is phosphorylated by PKA.
 
+## Accessing Parameters
+
+This package uses ModelingToolkit v11, which reorders parameters during structural simplification. Always use symbolic access to retrieve parameter values:
+
+```julia
+# Correct: symbolic parameter access
+c1_value = prob.ps[sys.c1]   # iso_conc
+c50_value = prob.ps[sys.c50]
+
+# Wrong: positional indexing (unreliable)
+# c1_value = prob.p[1][1]  # DO NOT USE
+```
+
 ## Reference
 
 Gong, J.Q.X., Susilo, M.E., Sher, A., Musante, C.J., & Sobie, E.A. (2020).

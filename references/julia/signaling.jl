@@ -354,10 +354,9 @@ function rhs_signaling!(du::AbstractArray, u::AbstractArray, c::AbstractArray, t
     # Concentration of free PKA-phosphorylated beta2AR in the extracaveolar space
     beta_eca_Rb2_pka_f =
         (
-            -beta_eca_Rb2_pka_f_b + √(
-                beta_eca_Rb2_pka_f_b * beta_eca_Rb2_pka_f_b -
-                4.0 * c[99] * beta_eca_Rb2_pka_f_c,
-            )
+            -beta_eca_Rb2_pka_f_b +
+            √(beta_eca_Rb2_pka_f_b * beta_eca_Rb2_pka_f_b -
+              4.0 * c[99] * beta_eca_Rb2_pka_f_c,)
         ) / (2.0 * c[99])
 
     # Concentration of total PKA-phosphorylated beta1 receptors in the extracaveolar space
@@ -389,10 +388,9 @@ function rhs_signaling!(du::AbstractArray, u::AbstractArray, c::AbstractArray, t
     # Concentration of free non-phosphorylated beta-1 AR in the cytoplasm
     Rb1_np_f =
         (
-            -beta_cyt_Rb1_np_f_b + √(
-                beta_cyt_Rb1_np_f_b * beta_cyt_Rb1_np_f_b -
-                4.0 * c[106] * beta_cyt_Rb1_np_f_c,
-            )
+            -beta_cyt_Rb1_np_f_b +
+            √(beta_cyt_Rb1_np_f_b * beta_cyt_Rb1_np_f_b -
+              4.0 * c[106] * beta_cyt_Rb1_np_f_c,)
         ) / (2.0 * c[106])
     # Concentration of free (non-complexed) Gi in the cytoplasm
     beta_cyt_Gs_f = beta_cyt_Gs_abg / (1.0 + Rb1_np_f / c[66] * (1.0 + c[1] / c[67]))
@@ -421,10 +419,9 @@ function rhs_signaling!(du::AbstractArray, u::AbstractArray, c::AbstractArray, t
     # Concentration of free PKA-phosphorylated beta2AR in the caveolar subspace
     beta_cav_Rb2_pka_f =
         (
-            -beta_cav_Rb2_pka_f_b + √(
-                beta_cav_Rb2_pka_f_b * beta_cav_Rb2_pka_f_b -
-                4.0 * c[90] * beta_cav_Rb2_pka_f_c,
-            )
+            -beta_cav_Rb2_pka_f_b +
+            √(beta_cav_Rb2_pka_f_b * beta_cav_Rb2_pka_f_b -
+              4.0 * c[90] * beta_cav_Rb2_pka_f_c,)
         ) / (2.0 * c[90])
     # Concentration of free (non-complexed) Gi in the caveolar subspace
     beta_cav_Gi_f =
@@ -1285,7 +1282,6 @@ function get_default_initial_state()
     ]
 end
 
-
 end # module
 
 struct GongBetaAdrenergicSignalingModel{T}
@@ -1402,7 +1398,7 @@ This function computes effective fractions and updates the PKA_P array in-place.
 function update_PKA!(PKA_P, u_signaling, constantsSig)
     # Temporary array for effective fractions
     effective_fractions = zeros(eltype(PKA_P), 8)
-    
+
     # Calculate effective fractions (phosphorylation levels)
     effective_fractions!(effective_fractions, u_signaling, constantsSig)
     fICaL_PKA, fIKs_PKA, fPLB_PKA, fTnI_PKA, fINa_PKA, fINaK_PKA, fRyR_PKA, fIKb_PKA =
@@ -1469,16 +1465,15 @@ function (model::CoupledTWorldSignaling)(du, u, p, t)
     u_signaling = @view u[94:150]
     du_tworld = @view du[1:93]
     du_signaling = @view du[94:150]
-    
+
     # Compute signaling dynamics
     model.signaling(du_signaling, u_signaling, nothing, t)
-    
+
     # Update PKA phosphorylation levels in TWorld model
     update_PKA!(model.tworld.PKA_P, u_signaling, model.signaling.c)
-    
+
     # Compute TWorld dynamics
     model.tworld(du_tworld, u_tworld, nothing, t)
-    
+
     return nothing
 end
-

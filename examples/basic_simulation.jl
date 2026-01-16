@@ -6,7 +6,8 @@ This example demonstrates:
 2. Printing phosphorylation observables before and after simulation
 """
 
-using Pkg; Pkg.activate(@__DIR__)
+using Pkg;
+Pkg.activate(@__DIR__)
 using GongBetaAdrenergicSignaling
 using OrdinaryDiffEq
 
@@ -14,7 +15,7 @@ N_beats = 200
 BCL = 1000
 
 # Baseline simulation
-@mtkbuild sys = GongBetaAdrenergic(iso_conc=1.0)
+@mtkcompile sys = GongBetaAdrenergic(iso_conc=1.0)
 prob = ODEProblem(sys, [], (0.0, N_beats * BCL))
 sol = solve(prob, Tsit5())
 
