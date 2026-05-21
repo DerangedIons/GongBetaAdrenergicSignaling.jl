@@ -1,129 +1,138 @@
-@testitem "RHS evaluation" begin
+@testitem "RHS snapshot (t=0, default initial state)" begin
     using GongBetaAdrenergicSignaling
-    using ModelingToolkit
-    using OrdinaryDiffEq
     using Test
 
-    # Load reference model
-    include("../references/julia/signaling.jl")
-    using .SignalingModel
+    # Regression snapshot for rhs_signaling! evaluated at t=0 with the default initial
+    # state. The pinned values were generated from rhs_signaling! itself, so this guards
+    # against accidental edits to the 674-line RHS — it does not validate correctness
+    # (see integration.jl for validation against MATLAB reference data).
+    u0 = default_initial_state()
 
-    # Initialize reference model constants (167 parameters)
-    c = zeros(Float64, SignalingModel.NUM_PARAMS)
-    iso_conc = 0.0
-    radiusmultiplier = 1.0
-    SignalingModel.ConstantsSignalingMyokit2!(c, iso_conc, radiusmultiplier)
+    du_expected_baseline = [
+        3.782982966812898e-12,
+        1.1609741466800383e-13,
+        3.0651231336040197e-15,
+        3.8082078020543195e-12,
+        1.1622755882734204e-13,
+        3.5358583465663896e-15,
+        2.522483524142194e-14,
+        1.30144159338208e-16,
+        4.707352129623699e-16,
+        8.738275253383776e-11,
+        7.709632279806478e-11,
+        1.84851546916609e-12,
+        -4.35745286836994e-11,
+        -3.50562368657591e-13,
+        -1.7045806837737122e-14,
+        -6.088658468183762e-17,
+        -2.8798956622972317e-16,
+        -1.7266926645528726e-17,
+        1.829025730870626e-11,
+        1.2458176712470958e-12,
+        1.3310336777205834e-11,
+        1.2836848989599554e-11,
+        4.734877876062805e-13,
+        -9.775362741493154e-13,
+        5.67332847367652e-13,
+        1.0908358660799422e-12,
+        1.0906737045630887e-12,
+        1.6216151685344293e-16,
+        -1.8506307597476735e-13,
+        6.913492001103805e-14,
+        2.162945378358927e-13,
+        2.1625391690045793e-13,
+        4.062093543477641e-17,
+        9.166782025533645e-12,
+        4.690109276428087e-15,
+        2.46707507146806e-12,
+        4.193207938611105e-17,
+        3.3496284088455067e-15,
+        -2.8079247043765086e-9,
+        2.9880152401694706e-13,
+        1.157285378639017e-14,
+        -1.944416438244556e-8,
+        1.4707199694208306e-12,
+        -8.880318575209029e-10,
+        -7.412292835290782e-11,
+        1.8118016007026996e-12,
+        2.2700199393821396e-12,
+        -8.053328594361911e-11,
+        -2.1754883178202756e-16,
+        -4.669415723003445e-12,
+        -4.955073486072326e-12,
+        -2.856577630688806e-13,
+        -1.9025455335140295e-14,
+        -2.7670262613004313e-17,
+        -6.292975038638127e-16,
+        -8.218354382444337e-16,
+        -1.9253793438062105e-16,
+    ]
 
-    # Get reference initial state (57 states)
-    u_ref = SignalingModel.get_default_initial_state()
+    du_expected_iso = [
+        0.0006295029168015347,
+        0.0002576604411000529,
+        1.612727938228318e-5,
+        0.0006295029168267596,
+        0.0002576604411001831,
+        1.6127279382753917e-5,
+        2.522483524142194e-14,
+        1.30144159338208e-16,
+        4.707352129623699e-16,
+        8.738275253383776e-11,
+        7.709632279806478e-11,
+        1.84851546916609e-12,
+        -4.35745286836994e-11,
+        -3.50562368657591e-13,
+        -1.7045806837737122e-14,
+        2.4547318252170493e-8,
+        2.447220677737841e-8,
+        1.720380590109479e-9,
+        1.829025730870626e-11,
+        1.2458176712470958e-12,
+        1.3310336777205834e-11,
+        1.2836848989599554e-11,
+        4.734877876062805e-13,
+        -9.775362741493154e-13,
+        5.67332847367652e-13,
+        1.0908358660799422e-12,
+        1.0906737045630887e-12,
+        1.6216151685344293e-16,
+        -1.8506307597476735e-13,
+        6.913492001103805e-14,
+        2.162945378358927e-13,
+        2.1625391690045793e-13,
+        4.062093543477641e-17,
+        9.166782025533645e-12,
+        4.690109276428087e-15,
+        2.46707507146806e-12,
+        4.193207938611105e-17,
+        3.3496284088455067e-15,
+        -2.8079247043765086e-9,
+        2.9880152401694706e-13,
+        1.157285378639017e-14,
+        -1.944416438244556e-8,
+        1.4707199694208306e-12,
+        -8.880318575209029e-10,
+        -7.412292835290782e-11,
+        1.8118016007026996e-12,
+        2.2700199393821396e-12,
+        -8.053328594361911e-11,
+        5.5179158994986374e-8,
+        9.726627177822705e-5,
+        9.72662714925693e-5,
+        -2.856577630688806e-13,
+        -1.9025455335140295e-14,
+        1.3968103124785563e-9,
+        3.436313968693333e-5,
+        3.436313968674079e-5,
+        -1.9253793438062105e-16,
+    ]
 
-    # Allocate derivative array for reference
-    du_ref = zeros(Float64, SignalingModel.NUM_STATES)
-
-    # Evaluate reference RHS at t=0
-    t_eval = 0.0
-    SignalingModel.rhs_signaling!(du_ref, u_ref, c, t_eval)
-
-    # Build MTK model
-    @mtkcompile sys = GongBetaAdrenergic()
-
-    # Create ODE problem with default initial conditions
-    prob_mtk = ODEProblem(sys, [], (0.0, 1.0))
-
-    # Allocate derivative array for MTK model
-    du_mtk = zeros(length(prob_mtk.u0))
-
-    # Evaluate MTK RHS at t=0
-    prob_mtk.f(du_mtk, prob_mtk.u0, prob_mtk.p, 0.0)
-
-    # MTK may reorder states during structural_simplify
-    # Create mapping: ref_idx -> mtk_idx by matching initial conditions
-    u0_ref = u_ref
-    u0_mtk = prob_mtk.u0
-    mapping = zeros(Int, length(u0_ref))
-
-    for i in 1:length(u0_ref)
-        for j in 1:length(u0_mtk)
-            if isapprox(u0_ref[i], u0_mtk[j], atol = 1.0e-15)
-                mapping[i] = j
-                break
-            end
-        end
-        @test mapping[i] != 0  # Ensure all states are mapped
+    for (iso_conc, du_expected) in
+        ((0.0, du_expected_baseline), (1.0, du_expected_iso))
+        p = compute_parameters(iso_conc, 1.0)
+        du = zeros(NUM_STATES)
+        rhs_signaling!(du, u0, p, 0.0)
+        @test all(isapprox.(du, du_expected))
     end
-
-    # Test that initial conditions match
-    @test isapprox(u_ref, u0_mtk[mapping])
-    # Test that derivatives match
-    @test isapprox(du_ref, du_mtk[mapping])
-end
-
-@testitem "RHS evaluation with isoproterenol" begin
-    using GongBetaAdrenergicSignaling
-    using ModelingToolkit
-    using OrdinaryDiffEq
-    using Test
-
-    # Load reference model
-    include("../references/julia/signaling.jl")
-    using .SignalingModel
-
-    # Test with 1.0 μM isoproterenol
-    iso_conc = 1.0
-    radiusmultiplier = 1.0
-
-    # Initialize reference model constants with isoproterenol
-    c = zeros(Float64, SignalingModel.NUM_PARAMS)
-    SignalingModel.ConstantsSignalingMyokit2!(c, iso_conc, radiusmultiplier)
-
-    # Get reference initial state (should be same as baseline for initial conditions)
-    u_ref = SignalingModel.get_default_initial_state()
-
-    # Allocate derivative array for reference
-    du_ref = zeros(Float64, SignalingModel.NUM_STATES)
-
-    # Evaluate reference RHS at t=0 with isoproterenol
-    t_eval = 0.0
-    SignalingModel.rhs_signaling!(du_ref, u_ref, c, t_eval)
-
-    # Build MTK model with isoproterenol
-    @mtkcompile sys = GongBetaAdrenergic(
-        iso_conc = iso_conc, radiusmultiplier = radiusmultiplier
-    )
-
-    # Create ODE problem with default initial conditions
-    prob_mtk = ODEProblem(sys, [], (0.0, 1.0))
-
-    # Allocate derivative array for MTK model
-    du_mtk = zeros(length(prob_mtk.u0))
-
-    # Evaluate MTK RHS at t=0
-    prob_mtk.f(du_mtk, prob_mtk.u0, prob_mtk.p, 0.0)
-
-    # MTK may reorder states during structural_simplify
-    # Create mapping: ref_idx -> mtk_idx by matching initial conditions
-    u0_ref = u_ref
-    u0_mtk = prob_mtk.u0
-    mapping = zeros(Int, length(u0_ref))
-
-    for i in 1:length(u0_ref)
-        for j in 1:length(u0_mtk)
-            if isapprox(u0_ref[i], u0_mtk[j], atol = 1.0e-15)
-                mapping[i] = j
-                break
-            end
-        end
-        @test mapping[i] != 0  # Ensure all states are mapped
-    end
-
-    # Test that initial conditions match
-    @test isapprox(u_ref, u0_mtk[mapping])
-
-    # Test that derivatives match with isoproterenol
-    @test isapprox(du_ref, du_mtk[mapping])
-
-    # Verify that iso_conc parameter is correctly set (c1 should equal iso_conc)
-    # Extract parameter c1 from the MTK problem using symbolic access
-    c1_mtk = prob_mtk.ps[sys.c1]
-    @test isapprox(c1_mtk, iso_conc)
 end

@@ -1,10 +1,8 @@
 @testitem "Effective fractions (5 beats, iso_conc=0.1)" begin
     using GongBetaAdrenergicSignaling
-    using ModelingToolkit
-    using OrdinaryDiffEq
+    using OrdinaryDiffEqLowOrderRK
     using Test
 
-    # Test parameters - same as MATLAB version
     iso_conc = 0.1
     radiusmultiplier = 1.0
     beats = 5
@@ -23,27 +21,15 @@
         2.4984103654765344e-3,  # fIKurP
     ]
 
-    # Build MTK model with isoproterenol
-    @mtkcompile sys = GongBetaAdrenergic(
-        iso_conc = iso_conc, radiusmultiplier = radiusmultiplier
-    )
+    # Solve the plain ODE function over 5 beats with the Euler method
+    p = compute_parameters(iso_conc, radiusmultiplier)
+    u0 = default_initial_state()
+    prob = ODEProblem(rhs_signaling!, u0, tspan, p)
+    sol = solve(prob, Euler(); dt = 1.0e-3)
 
-    # Create ODE problem and solve with Euler method
-    prob_mtk = ODEProblem(sys, [], tspan)
-    sol_mtk = solve(prob_mtk, Euler(); dt = 1.0e-3)
+    # Compute effective phosphorylation fractions at the final state
+    out = zeros(8)
+    effective_fractions!(out, sol.u[end], p)
 
-    # Extract effective fractions from model observables at final time
-    effective_fractions = [
-        sol_mtk[sys.fICaL_PKA][end],
-        sol_mtk[sys.fIKs_PKA][end],
-        sol_mtk[sys.fPLB_PKA][end],
-        sol_mtk[sys.fTnI_PKA][end],
-        sol_mtk[sys.fINa_PKA][end],
-        sol_mtk[sys.fINaK_PKA][end],
-        sol_mtk[sys.fRyR_PKA][end],
-        sol_mtk[sys.fIKur_PKA][end],
-    ]
-
-    # Compare phosphorylation fractions to MATLAB reference
-    @test all(isapprox.(effective_fractions, matlab_phosph, atol = 1.0e-4))
+    @test all(isapprox.(out, matlab_phosph, atol = 1.0e-4))
 end

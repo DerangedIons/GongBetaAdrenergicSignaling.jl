@@ -1,14 +1,8 @@
 @testitem "Full integration (5 beats, iso_conc=0.1)" begin
     using GongBetaAdrenergicSignaling
-    using ModelingToolkit
-    using OrdinaryDiffEq
+    using OrdinaryDiffEqLowOrderRK
     using Test
 
-    # Load reference model
-    include("../references/julia/signaling.jl")
-    using .SignalingModel
-
-    # Test parameters - same as MATLAB version
     iso_conc = 0.1
     radiusmultiplier = 1.0
     beats = 5
@@ -76,34 +70,12 @@
         6.3890544472593972e-4,
     ]
 
-    # Build MTK model with isoproterenol
-    @mtkcompile sys = GongBetaAdrenergic(
-        iso_conc = iso_conc, radiusmultiplier = radiusmultiplier
-    )
+    # Solve the plain ODE function over 5 beats with the Euler method
+    p = compute_parameters(iso_conc, radiusmultiplier)
+    u0 = default_initial_state()
+    prob = ODEProblem(rhs_signaling!, u0, tspan, p)
+    sol = solve(prob, Euler(); dt = 1.0e-3)
 
-    # Create ODE problem and solve with Euler method
-    prob_mtk = ODEProblem(sys, [], tspan)
-    sol_mtk = solve(prob_mtk, Euler(); dt = 1.0e-3)
-
-    # Get reference initial state to create mapping
-    u_ref = SignalingModel.get_default_initial_state()
-    u0_mtk = prob_mtk.u0
-
-    # Create mapping: ref_idx -> mtk_idx by matching initial conditions
-    mapping = zeros(Int, length(u_ref))
-    for i in 1:length(u_ref)
-        for j in 1:length(u0_mtk)
-            if isapprox(u_ref[i], u0_mtk[j], atol = 1.0e-15)
-                mapping[i] = j
-                break
-            end
-        end
-        @test mapping[i] != 0  # Ensure all states are mapped
-    end
-
-    # Extract final state in reference order
-    julia_solution = sol_mtk.u[end][mapping]
-
-    # Compare final solution to MATLAB reference
-    @test all(isapprox.(julia_solution, matlab_solution, atol = 1.0e-8))
+    # rhs_signaling! uses the natural state order, matching the MATLAB reference
+    @test all(isapprox.(sol.u[end], matlab_solution, atol = 1.0e-8))
 end
