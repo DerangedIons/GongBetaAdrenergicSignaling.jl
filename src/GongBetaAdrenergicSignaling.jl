@@ -1,15 +1,23 @@
 """
     GongBetaAdrenergicSignaling
 
-ModelingToolkit.jl implementation of the Gong et al. (2020) beta-adrenergic signaling
-model for cardiac myocytes. The model contains 57 states, 167 parameters, and computes
-effective phosphorylation fractions for 8 cardiac ion channels and regulatory proteins.
+Plain-Julia implementation of the Gong et al. (2020) beta-adrenergic signaling model for
+cardiac myocytes (57 states, 167 parameters, 8 phosphorylation observables).
 
-# Exports
-- `GongBetaAdrenergic`: MTK model constructor with built-in observable outputs for 8 phosphorylation fractions
-- `compute_parameters`: Compute parameters from `iso_conc` and `radiusmultiplier`
+The model is exposed as an in-place ODE right-hand side, [`rhs_signaling!`](@ref), for
+direct use with OrdinaryDiffEq.jl:
 
-See the README for usage examples and documentation.
+```julia
+using GongBetaAdrenergicSignaling, OrdinaryDiffEq
+
+p = compute_parameters(1.0)                  # 1 μM isoproterenol
+u0 = default_initial_state()
+prob = ODEProblem(rhs_signaling!, u0, (0.0, 1000.0), p)
+sol = solve(prob, Rodas5P())
+```
+
+A symbolic ModelingToolkit `System` is also available through [`GongBetaAdrenergic`](@ref),
+which lives in a package extension — load it with `using ModelingToolkit`.
 
 # Reference
 Gong, J.Q.X., Susilo, M.E., Sher, A., Musante, C.J., & Sobie, E.A. (2020).
@@ -19,31 +27,54 @@ DOI: https://doi.org/10.1016/j.yjmcc.2020.04.009
 """
 module GongBetaAdrenergicSignaling
 
-using Reexport
-@reexport using ModelingToolkit
-
-# Load parameter computation function first
-include("parameters.jl")
-
-# Load the @mtkmodel definition (exports GongBetaAdrenergic directly)
-include("model.jl")
-
-export GongBetaAdrenergic, compute_parameters
-
-# Precompilation workload
 using PrecompileTools: @compile_workload
 
+"Number of differential state variables in the signaling model."
+const NUM_STATES = 57
+
+"Number of parameters (c1-c167) in the signaling model."
+const NUM_PARAMS = 167
+
+include("parameters.jl")
+include("rhs.jl")
+include("effective_fractions.jl")
+include("initial_conditions.jl")
+
+"""
+    GongBetaAdrenergic(; iso_conc=0.0, radiusmultiplier=1.0, name=:GongBetaAdrenergic)
+
+Build the Gong et al. beta-adrenergic signaling model as a ModelingToolkit `System`.
+
+!!! note
+    This constructor is provided by a package extension. Run `using ModelingToolkit`
+    before calling it, otherwise a `MethodError` is thrown. For the plain ODE function
+    that needs no extra dependencies, use [`rhs_signaling!`](@ref) instead.
+
+# Arguments
+- `iso_conc=0.0`: Isoproterenol concentration (μM)
+- `radiusmultiplier=1.0`: Cell radius scaling factor
+- `name=:GongBetaAdrenergic`: System name
+
+# Returns
+- `System`: unsimplified system — pass it through `mtkcompile` before solving.
+"""
+function GongBetaAdrenergic end
+
+export rhs_signaling!,
+    effective_fractions!,
+    compute_parameters,
+    compute_parameters!,
+    default_initial_state,
+    NUM_STATES,
+    NUM_PARAMS,
+    GongBetaAdrenergic
+
 @compile_workload begin
-    # Precompile parameter computation (baseline and with iso)
-    compute_parameters()
-    compute_parameters(1.0, 1.0)
-
-    # Precompile model construction
-    sys_baseline = GongBetaAdrenergic()
-    compiled_baseline = mtkcompile(sys_baseline)
-
-    sys_stim = GongBetaAdrenergic(iso_conc = 1.0)
-    compiled_stim = mtkcompile(sys_stim)
+    p = compute_parameters(1.0)
+    u0 = default_initial_state()
+    du = similar(u0)
+    rhs_signaling!(du, u0, p, 0.0)
+    effective_fractions!(zeros(8), u0, p)
 end
 
 end

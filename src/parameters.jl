@@ -1,33 +1,34 @@
 """
     compute_parameters(iso_conc=0.0, radiusmultiplier=1.0)
 
-Compute all 167 model parameters (c1-c167) based on isoproterenol concentration and radius multiplier.
-
-This function implements the same parameter calculation logic as `ConstantsSignalingMyokit2!`
-from the reference model, translating drug concentrations and geometric properties into
+Compute all 167 model parameters (c1-c167) from the isoproterenol concentration and cell
+radius multiplier, translating drug concentrations and geometric properties into
 model-specific rate constants, equilibrium constants, and concentrations.
 
 # Arguments
-- `iso_conc::Real=0.0`: Isoproterenol concentration (μM)
-- `radiusmultiplier::Real=1.0`: Cell radius scaling factor
+- `iso_conc=0.0`: Isoproterenol concentration (μM)
+- `radiusmultiplier=1.0`: Cell radius scaling factor
 
 # Returns
-- `NamedTuple`: Parameters c1 through c167 as named tuple for passing to model constructor
+- `Vector{Float64}`: the 167 parameter values, ordered `c1` through `c167`, ready to pass
+  as `p` to [`rhs_signaling!`](@ref).
 
 # Example
 ```julia
-# Default baseline (no stimulation)
-params = compute_parameters()
-
-# 1 μM isoproterenol stimulation
-params = compute_parameters(1.0, 1.0)
-
-# Use with model constructor
-@mtkcompile sys = GongBetaAdrenergic(; params...)
+p = compute_parameters(1.0)          # 1 μM isoproterenol
+prob = ODEProblem(rhs_signaling!, default_initial_state(), (0.0, 1000.0), p)
 ```
 """
-function compute_parameters(iso_conc::Real = 0.0, radiusmultiplier::Real = 1.0)
-    c = zeros(Float64, 167)
+compute_parameters(iso_conc = 0.0, radiusmultiplier = 1.0) =
+    compute_parameters!(zeros(Float64, NUM_PARAMS), iso_conc, radiusmultiplier)
+
+"""
+    compute_parameters!(c, iso_conc=0.0, radiusmultiplier=1.0)
+
+In-place variant of [`compute_parameters`](@ref): fill the preallocated 167-element
+vector `c` and return it.
+"""
+function compute_parameters!(c, iso_conc = 0.0, radiusmultiplier = 1.0)
 
     # iso
     c[1] = iso_conc
@@ -480,6 +481,5 @@ function compute_parameters(iso_conc::Real = 0.0, radiusmultiplier::Real = 1.0)
     # iks
     c[167] = 0.0306 + c[145] / c[144]
 
-    # Return as named tuple for unpacking into @mtkmodel
-    return (; (Symbol("c$i") => c[i] for i in 1:167)...)
+    return c
 end

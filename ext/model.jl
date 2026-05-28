@@ -1,36 +1,14 @@
-# Migrated to MTK v11 programmatic API
-# Original: @mtkmodel macro from MTK v9/v10
-# Reference: Gong et al. (2020) beta-adrenergic signaling model
+# Gong et al. (2020) beta-adrenergic signaling model as a ModelingToolkit System.
+# Migrated to the MTK v11 programmatic API (originally an @mtkmodel macro on MTK v9/v10).
+# Included by the GongBetaAdrenergicSignalingModelingToolkitExt extension.
 
-using ModelingToolkit
-using ModelingToolkit: t_nounits as t, D_nounits as D
-
-"""
-    GongBetaAdrenergic(; iso_conc=0.0, radiusmultiplier=1.0, name=:GongBetaAdrenergic)
-
-Build the Gong et al. beta-adrenergic signaling model as a ModelingToolkit System.
-
-# Arguments
-- `iso_conc::Real=0.0`: Isoproterenol concentration (μM)
-- `radiusmultiplier::Real=1.0`: Cell radius scaling factor
-- `name::Symbol=:GongBetaAdrenergic`: System name
-
-# Returns
-- `System`: Unsimplified system - use `@mtkcompile` to compile
-
-# Example
-```julia
-using GongBetaAdrenergicSignaling
-using OrdinaryDiffEq
-
-@mtkcompile sys = GongBetaAdrenergic(iso_conc=1.0)
-prob = ODEProblem(sys, [], (0.0, 1000.0))
-sol = solve(prob, Rodas5P())
-```
-"""
-function GongBetaAdrenergic(; iso_conc = 0.0, radiusmultiplier = 1.0, name = :GongBetaAdrenergic)
-    # Compute parameter values from structural parameters
-    p = compute_parameters(iso_conc, radiusmultiplier)
+function GongBetaAdrenergicSignaling.GongBetaAdrenergic(;
+        iso_conc = 0.0, radiusmultiplier = 1.0, name = :GongBetaAdrenergic
+    )
+    # Compute parameter values, then re-expose as a named tuple so the `@parameters`
+    # block below can read each default as `p.cN`.
+    cvec = compute_parameters(iso_conc, radiusmultiplier)
+    p = (; (Symbol(:c, i) => cvec[i] for i in 1:NUM_PARAMS)...)
 
     # Declare symbolic parameters with computed defaults
     @parameters begin

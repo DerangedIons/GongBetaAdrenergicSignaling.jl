@@ -1,12 +1,11 @@
 """
-Basic simulation example for the Gong Beta Adrenergic Signaling model.
+Basic simulation example for the Gong beta-adrenergic signaling model.
 
-This example demonstrates:
-1. Baseline simulation (no isoproterenol)
-2. Printing phosphorylation observables before and after simulation
+Demonstrates the plain-ODE path: build the parameter vector, solve `rhs_signaling!`
+with OrdinaryDiffEq.jl, and compute phosphorylation fractions from the solution.
 """
 
-using Pkg;
+using Pkg
 Pkg.activate(@__DIR__)
 using GongBetaAdrenergicSignaling
 using OrdinaryDiffEq
@@ -14,18 +13,20 @@ using OrdinaryDiffEq
 N_beats = 200
 BCL = 1000
 
-# Baseline simulation
-@mtkcompile sys = GongBetaAdrenergic(iso_conc = 1.0)
-prob = ODEProblem(sys, [], (0.0, N_beats * BCL))
+# 1 μM isoproterenol stimulation
+p = compute_parameters(1.0)
+u0 = default_initial_state()
+prob = ODEProblem(rhs_signaling!, u0, (0.0, N_beats * BCL), p)
 sol = solve(prob, Tsit5())
 
-# Print phosphorylation observables
-println("\n=== Phosphorylation Observables (t=0 → t=$(sol.t[end]) ms) ===")
-println("  fICaL_PKA:  ", sol[sys.fICaL_PKA][1], " → ", sol[sys.fICaL_PKA][end])
-println("  fIKs_PKA:   ", sol[sys.fIKs_PKA][1], " → ", sol[sys.fIKs_PKA][end])
-println("  fPLB_PKA:   ", sol[sys.fPLB_PKA][1], " → ", sol[sys.fPLB_PKA][end])
-println("  fTnI_PKA:   ", sol[sys.fTnI_PKA][1], " → ", sol[sys.fTnI_PKA][end])
-println("  fINa_PKA:   ", sol[sys.fINa_PKA][1], " → ", sol[sys.fINa_PKA][end])
-println("  fINaK_PKA:  ", sol[sys.fINaK_PKA][1], " → ", sol[sys.fINaK_PKA][end])
-println("  fRyR_PKA:   ", sol[sys.fRyR_PKA][1], " → ", sol[sys.fRyR_PKA][end])
-println("  fIKur_PKA:  ", sol[sys.fIKur_PKA][1], " → ", sol[sys.fIKur_PKA][end])
+# Phosphorylation fractions at the start and end of the simulation
+labels = ("fICaL", "fIKs", "fPLB", "fTnI", "fINa", "fINaK", "fRyR", "fIKur")
+f_start = zeros(8)
+f_end = zeros(8)
+effective_fractions!(f_start, sol.u[1], p)
+effective_fractions!(f_end, sol.u[end], p)
+
+println("\n=== Phosphorylation fractions (t=0 → t=$(sol.t[end]) ms) ===")
+for (i, label) in enumerate(labels)
+    println("  $label:  ", f_start[i], " → ", f_end[i])
+end
