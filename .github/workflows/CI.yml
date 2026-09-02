@@ -19,6 +19,9 @@ jobs:
     permissions: # needed to allow julia-actions/cache to proactively delete old caches that it has created
       actions: write
       contents: read
+    env:
+      # Secrets aren't readable in a step-level `if`, so surface presence here.
+      HAS_APP_KEY: ${{ secrets.DERANGEDIONS_CI_APP_KEY != '' }}
     strategy:
       fail-fast: false
       matrix:
@@ -37,6 +40,11 @@ jobs:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
       - uses: julia-actions/cache@v3
+      - name: Authenticate to private DerangedIons deps
+        if: env.HAS_APP_KEY == 'true'
+        uses: DerangedIons/.github/actions/julia-private-deps@main
+        with:
+          app-private-key: ${{ secrets.DERANGEDIONS_CI_APP_KEY }}
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1
       - uses: julia-actions/julia-processcoverage@v1
